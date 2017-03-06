@@ -24,17 +24,18 @@ using namespace std;
  */
 
 struct Ants {
-   int   x,y, id;
-   int solution[100];
-   int road_length;
+   int node_id,x,y; // the id of the node as well as coordinates
+   int solution[100], p; // current solution for this ant as a vector; p represents the progress
+   float road_length; // total distance of the solution
 }; 
 
 struct Nodes {
-    int x,y;
+    int x,y, cluster; // coordinates and cluster number
 };
 
 int clusters[100][100], 
     pheromone[100][100], 
+    visited[100][100],
     node_nr,
     iterations, 
     ants_number;
@@ -57,10 +58,11 @@ void initialize_variables()
         {
             clusters[i][j]=0;
             pheromone[i][j]=0;
+            visited[i][j]=0;
         }
 }
 
-void initialize_matrices()
+void initialize_node_matrices()
 {
     std::fstream nodes_file("graph_nodes.txt", std::ios_base::in); //D:
 
@@ -115,21 +117,22 @@ void cluster_nodes()
             
             for (int j=i+1; j<=node_nr; j++)
                 //the code under sqrt function is basically euclidian distance between 2 points
-                if ( sqrt( pow((nodes[i].x - nodes[j].x),2) + pow((nodes[i].y - nodes[j].y),2) ) <= threshold ) //   if euclidean distance between 2 points
-                    clusters[nodes[j].x][nodes[j].y]=cluster_nr;                            //is smaller than a certain threshold the nodes are marked
-            }                                                                     // as being part of same cluster
-                            
-            
+                if ( sqrt( pow((nodes[i].x - nodes[j].x),2) + pow((nodes[i].y - nodes[j].y),2) ) <= threshold )
+                {
+                    clusters[nodes[j].x][nodes[j].y]=cluster_nr;
+                    nodes[j].cluster=cluster_nr;
+                }                            
+            }                                
 }
 
 void locate_ants()
 {
     for (int i=1; i<=ants_number; i++)
     {   
-        int pos = rand() % node_nr + 1; // random number between 1 and 100; for x location 
-        ants[i].x=nodes[pos].x;
-        ants[i].y=nodes[pos].y;
-    }
+        int rand_pos = rand() % node_nr + 1; // random number between 1 and 100; for x location 
+        ants[i].x=nodes[rand_pos].x;
+        ants[i].y=nodes[rand_pos].y;
+        }
 }
 
 void update_pheromone()
@@ -137,24 +140,57 @@ void update_pheromone()
     
 }
 
+/*
+ * ant represents the details of the ant
+ * p represents the progress of solution; e.g. how many nodes are there in the solution already; it has a pointer
+ *      so it will be dynamically updated
+ * node_id represents the ant location and the starting point for calculating shortest distance
+ */
+void shortest_path(Ants *ant,int ant_nr)
+{
+    int min_dist=100;
+    for (int i=1; i<=node_nr; i++)
+    {
+        if(ant->node_id == i)
+        for (int j=1; j<=node_nr; j++)
+        {
+            if(visited[i][j]==0) 
+                //distance between initial node and 
+                if (sqrt( pow((nodes[i].x - nodes[j].x),2) + pow((nodes[i].y - nodes[j].y),2) ) < min_dist)
+                    {
+                        min_dist=sqrt( pow((nodes[i].x - nodes[j].x),2) + pow((nodes[i].y - nodes[j].y),2) );
+                        ant->node_id=j;
+                    }
+        ant->p++;
+        ants[ant_nr].solution[ant->p]=ant->node_id;
+        ants[ant_nr].road_length+=min_dist;
+        ants[ant_nr].node_id=ant->node_id;
+        ants[ant_nr].x=nodes[ant->node_id].x;
+        ants[ant_nr].y=nodes[ant->node_id].y;
+        visited[ants[ant_nr].x][ants[ant_nr].y]=1;
+        }
+    }
+}
+
 void run_aco()
 {
-    int x,y,h=0, position; // x,y are the coordinates; h will represent the heuristics;
+    int x,y,h=0; // x,y are the coordinates; h will represent the heuristics;
     for(int i=1 ; i<=iterations; i++)
     {
         locate_ants();
         for(int j=1; j<=ants_number; j++)
         {
             //chosing next node
-            position=1;
+            shortest_path(&ants[j],j);
+            //---
             for(int k=1; k<=node_nr; k++)
             {
-                if ( ants[j].x != nodes[k].x || ants[j].y != nodes[k].y)
+                if ( ants[j].node_id != k && nodes[k].cluster != nodes[ants[j].node_id].cluster && !visited[nodes[k].x][nodes[k].y])
                     //the code under sqrt function is basically euclidian distance between 2 points
-                    if( sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) )/ pheromone[ants[j].id][k] < h)
+                    if( sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) )/ pheromone[ants[j].node_id][k] < h)
                     {
-                        ants[j].solution[position]=k;
-                        h=sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) )/ pheromone[ants[j].id][k];
+                        ants[j].solution[ants[j].p]=k;
+                        h=sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) )/ pheromone[ants[j].node_id][k];
                     }        
             }
                 
@@ -165,7 +201,7 @@ void run_aco()
 
 int main(int argc, char** argv) {
     cout<<"Initialize matrices";
-    initialize_matrices();
+    initialize_node_matrices();
     cout<<"Matrices created! Press any key to continue...";
     getchar();
     
@@ -181,7 +217,7 @@ int main(int argc, char** argv) {
     getchar();
     
     cout<<"Starting algorithm...";
-    run_aco();
+    //run_aco();
     
     return 0;
 }
