@@ -33,12 +33,13 @@ struct Nodes {
     int x,y, cluster; // coordinates and cluster number
 };
 
-int clusters[100][100], 
-    pheromone[100][100], 
+int clusters[100][100],  
     visited[100][100],
     node_nr,
-    iterations, 
-    ants_number;
+    iterations=10, 
+    ants_number=4;
+
+float pheromone[100][100];
 
 double threshold;
 
@@ -100,6 +101,33 @@ void display_clusters()
     }
 }
 
+void display_pheromone_matrix()
+{
+    int i,j;
+    for(i=1;i<=node_nr;i++,cout<<endl)
+        for(j=1;j<=node_nr;j++)
+        {
+            cout<<pheromone[i][j]<<" ";
+        }
+}
+
+//resetting all the variables that are going to be used for next iteration
+void reset()
+{
+    int i,j;
+    for(i=1;i<=node_nr;i++)
+        for(j=1; j<=node_nr; j++)
+        {
+            visited[i][j]=0;
+        }
+    
+    for(i=1; i<=ants_number; i++)
+    {
+        ants[i].p=0;
+        ants[i].road_length=0;
+    }
+}
+
 void set_pher()
 {
     for (int a=1 ; a<=node_nr; a++)
@@ -130,6 +158,7 @@ void locate_ants()
     for (int i=1; i<=ants_number; i++)
     {   
         int rand_pos = rand() % node_nr + 1; // random number between 1 and 100; for x location 
+        ants[i].node_id=rand_pos;
         ants[i].x=nodes[rand_pos].x;
         ants[i].y=nodes[rand_pos].y;
         }
@@ -137,16 +166,20 @@ void locate_ants()
 
 void update_pheromone()
 {
-    
+    int i,j;
+    for(i=1;i<=ants_number;i++)
+        for(j=2;j<=ants[i].p;j++)
+        {
+            if(i!=j)
+           pheromone[ants[i].solution[j-1]][ants[i].solution[j]]+=0.5; 
+        }
 }
 
 /*
- * ant represents the details of the ant
- * p represents the progress of solution; e.g. how many nodes are there in the solution already; it has a pointer
- *      so it will be dynamically updated
- * node_id represents the ant location and the starting point for calculating shortest distance
+ * ant represents the details of the ant that is about to be moved
+ * ant_nr represents the id of the ant 
  */
-void shortest_path(Ants *ant,int ant_nr)
+void shortest_path_within_group(Ants *ant,int ant_nr)
 {
     int min_dist=100;
     for (int i=1; i<=node_nr; i++)
@@ -154,7 +187,7 @@ void shortest_path(Ants *ant,int ant_nr)
         if(ant->node_id == i)
         for (int j=1; j<=node_nr; j++)
         {
-            if(visited[i][j]==0) 
+            if(visited[i][j]==0 && i!=j) 
                 //distance between initial node and 
                 if (sqrt( pow((nodes[i].x - nodes[j].x),2) + pow((nodes[i].y - nodes[j].y),2) ) < min_dist)
                     {
@@ -177,15 +210,19 @@ void run_aco()
     int x,y,h=0; // x,y are the coordinates; h will represent the heuristics;
     for(int i=1 ; i<=iterations; i++)
     {
+        reset();
         locate_ants();
         for(int j=1; j<=ants_number; j++)
         {
             //chosing next node
-            shortest_path(&ants[j],j);
+            shortest_path_within_group(&ants[j],j);
             //---
             for(int k=1; k<=node_nr; k++)
             {
-                if ( ants[j].node_id != k && nodes[k].cluster != nodes[ants[j].node_id].cluster && !visited[nodes[k].x][nodes[k].y])
+                if ( ants[j].node_id != k && 
+                        nodes[k].cluster != nodes[ants[j].node_id].cluster && 
+                        !visited[nodes[k].x][nodes[k].y] &&
+                        nodes[k].x != nodes[k].y)
                     //the code under sqrt function is basically euclidian distance between 2 points
                     if( sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) )/ pheromone[ants[j].node_id][k] < h)
                     {
@@ -195,9 +232,43 @@ void run_aco()
             }
                 
         }
+        update_pheromone();
     } 
 }
-   
+  
+void construct_solution()
+{
+    int j,k,node=1,nr=1, max_pher,check;
+    int solution[100];
+    solution[nr]=node;
+    cout<<nodes[solution[nr]].x<<","<<nodes[solution[nr]].y;
+    while(nr<node_nr)
+    {
+        max_pher=0;
+        for(j=1;j<=node_nr;j++)
+        {
+                
+            if(pheromone[node][j]>max_pher && j!=node)
+            {
+                check=true;
+                for(k=nr;k>=1;k--)
+                    if(solution[k]==j)check=false;
+                    
+                if(check)
+                {
+                    max_pher=pheromone[node][j];
+                    node=j;
+                }
+            }
+        }
+        nr++;
+        solution[nr]=node;
+        cout<<"=>"<<nodes[solution[nr]].x<<","<<nodes[solution[nr]].y;
+    }
+    nr++;
+    solution[nr]=1;//to make sure you return to initial node
+    cout<<"=>"<<nodes[solution[nr]].x<<","<<nodes[solution[nr]].y;
+}
 
 int main(int argc, char** argv) {
     cout<<"Initialize matrices";
@@ -216,9 +287,17 @@ int main(int argc, char** argv) {
     cout<<"Press any key to continue...";
     getchar();
     
+    set_pher();
+    cout<<"pher before ------------------"<<endl;
+    display_pheromone_matrix();
+    
     cout<<"Starting algorithm...";
-    //run_aco();
+    run_aco();
+    
+    cout<<"pher after ------------------"<<endl;
+    display_pheromone_matrix();
+    
+    construct_solution();
     
     return 0;
 }
-
