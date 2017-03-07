@@ -222,7 +222,9 @@ void run_aco()
                 if ( ants[j].node_id != k && 
                         nodes[k].cluster != nodes[ants[j].node_id].cluster && 
                         !visited[nodes[k].x][nodes[k].y] &&
-                        nodes[k].x != nodes[k].y)
+                        nodes[k].x != nodes[k].y &&
+                        visited[nodes[k].x][nodes[k].y]
+                   )
                     //the code under sqrt function is basically euclidian distance between 2 points
                     if( sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) )/ pheromone[ants[j].node_id][k] < h)
                     {
