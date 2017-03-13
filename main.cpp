@@ -370,9 +370,9 @@ int main(int argc, char** argv) {
     
     cout<<"Please specify distance threshold for clustering:\n";
     cin>>threshold;
-    cout<<"Distance threshold is : "<<threshold;
+    cout<<"Distance threshold is : "<<threshold<<endl;
     
-    cout<<"Cluster nodes and display";
+    cout<<"Cluster nodes and display\n";
     display_nodes();
     cluster_nodes();
     display_clusters();
