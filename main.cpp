@@ -36,11 +36,13 @@ struct Nodes {
 };
 
 int clusters[100][100],
+    final_solution[100],
     node_nr,
     iterations=3, 
     ants_number=4;
 
-float pheromone[100][100];
+float pheromone[100][100],
+      optimal_length=std::numeric_limits<float>::max();
 
 double threshold;
 
@@ -53,22 +55,21 @@ struct Nodes nodes[100];
  * - nodes = the number of cities(graph nodes) 
  */
 
-void initialize_variables()
-{
-    for(int i=1;i<=node_nr;i++)
-        for(int j=1; j<=node_nr; j++)
-        {
-            clusters[i][j]=0;
-            pheromone[i][j]=0;
-        }
-}
-
-void initialize_node_matrices()
+void initialize()
 {
     std::fstream nodes_file("graph_nodes.txt", std::ios_base::in); //D:
 
     int a,b;
     node_nr=1;
+    
+    //setting 
+    //for(int i=1;i<=node_nr;i++)
+    //    for(int j=1; j<=node_nr; j++)
+    //    {
+    //        clusters[i][j]=0;
+    //        pheromone[i][j]=0;
+    //    }
+    
     cout<<"Getting nodes coordinates from file!\n";
     while (nodes_file >> a >> b)
     {
@@ -265,10 +266,34 @@ void shortest_path_within_cluster(int ant_nr)
     cout<<"position "<<ants[ant_nr].node_id<<":"<<ants[ant_nr].x<<","<<ants[ant_nr].y<<endl;
 }
 
+void update_final_solution()
+{
+    bool update_solution=false;
+    for(int q=1;q<=ants_number;q++)
+    {
+        cout<<"Distance: "<<ants[q].road_length<<" == ";
+        if(ants[q].road_length<optimal_length)
+        {
+            optimal_length=ants[q].road_length;
+            update_solution=true;
+
+        }
+        cout<<"ant"<<q<<" had the solution:";
+        for(int w=1;w<=node_nr;w++)
+        {
+            cout<<ants[q].solution[w]<<"->";
+            if(update_solution)
+                final_solution[w]=ants[q].solution[w];
+        }
+        cout<<endl;
+        update_solution=false;
+    }   
+}
+
 void run_aco()
 {
     int x,y,tmp;
-    float dist,h; // x,y are the coordinates; h will represent the heuristics;
+    float dist,h,average, probability; 
     for(int i=1 ; i<=iterations; i++)
     {
         cout<<">> Starting iteration "<<i<<endl;
@@ -308,7 +333,7 @@ void run_aco()
                         cout<<"> next node is "<<tmp<<":"<<nodes[tmp].x<<","<<nodes[tmp].y;
                         ants[j].p++;
                         ants[j].solution[ants[j].p]=tmp;
-                        ants[j].road_length+=h;
+                        ants[j].road_length+=dist;
                         ants[j].node_id=tmp;
                         ants[j].x=nodes[tmp].x;
                         ants[j].y=nodes[tmp].y;
@@ -318,53 +343,25 @@ void run_aco()
         }
         update_pheromone();
         cout<<"After iteration "<<i<<endl;
-        for(int q=1;q<=ants_number;q++)
-        {cout<<"ant"<<q<<" had the solution:";
-            for(int w=1;w<=node_nr;w++)
-                cout<<ants[q].solution[w]<<"->";
+        update_final_solution();
         cout<<endl;
-        }cout<<endl;
     } 
 }
   
-void construct_solution()
+void solution()
 {
-    int j,k,node=1,nr=1, max_pher,check;
-    int solution[100];
-    solution[nr]=node;
-    cout<<nodes[solution[nr]].x<<","<<nodes[solution[nr]].y;
-    while(nr<node_nr)
-    {
-        max_pher=0;
-        for(j=1;j<=node_nr;j++)
-        {
-                
-            if(pheromone[node][j]>max_pher && j!=node)
-            {
-                //if(check )
-                check=true;
-                for(k=nr;k>=1;k--)
-                    if(solution[k]==j)check=false;
-                    
-                if(check)
-                {
-                    max_pher=pheromone[node][j];
-                    node=j;
-                }
-            }
-        }
-        nr++;
-        solution[nr]=node;
-        cout<<"=>"<<nodes[solution[nr]].x<<","<<nodes[solution[nr]].y;
-    }
-    nr++;
-    solution[nr]=1;//to make sure you return to initial node
-    cout<<"=>"<<nodes[solution[nr]].x<<","<<nodes[solution[nr]].y;
+    int i,j;
+    cout<<"\n The most efficient path has the total distance: "<< optimal_length;
+    cout<<"\n The nodes that form this path are: ";
+    for(i=1;i<=node_nr;i++)
+        cout<<final_solution[i]<<"->";
+    
+    cout<<final_solution[1]<<endl;
 }
 
 int main(int argc, char** argv) {
     cout<<"Initialize matrices";
-    initialize_node_matrices();
+    initialize();
     cout<<"Matrices created! Press any key to continue...";
     getchar();
     
@@ -382,10 +379,10 @@ int main(int argc, char** argv) {
     cout<<"Starting algorithm...";
     run_aco();
     
-    cout<<"pheromone matrix after computations \n ------------------"<<endl;
-    display_pheromone_matrix();
+    //cout<<"pheromone matrix after computations \n ------------------"<<endl;
+    //display_pheromone_matrix();
     
-    construct_solution();
+    solution();
     
     return 0;
 }
