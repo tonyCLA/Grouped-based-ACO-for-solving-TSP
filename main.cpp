@@ -230,14 +230,14 @@ void shortest_path_within_cluster(int ant_nr)
 {
     float min_dist;
     int tmp,x,y;
-    cout<<"> ant moving in cluster "<<clusters[ants[ant_nr].x][ants[ant_nr].y]<<endl;
+    cout<<">> ant moving in cluster "<<clusters[ants[ant_nr].x][ants[ant_nr].y]<<endl;
     int cluster_nodes=get_cluster_nodes(clusters[ants[ant_nr].x][ants[ant_nr].y],ant_nr);
     //cout<<cluster_nodes<<endl;
     while(cluster_nodes>0)
     {
         tmp=0;
         min_dist=std::numeric_limits<float>::max();
-        cout<<"> Moving (within cluster) ant number "<<ant_nr<<" currently on "<<ants[ant_nr].node_id<<":"<<ants[ant_nr].x<<","<<ants[ant_nr].y<<endl;
+        cout<<">> Moving (within cluster) ant number "<<ant_nr<<" currently on "<<ants[ant_nr].node_id<<":"<<ants[ant_nr].x<<","<<ants[ant_nr].y<<endl;
         for (int j=1; j<=node_nr; j++)
         {
             x=nodes[j].x;
@@ -262,8 +262,8 @@ void shortest_path_within_cluster(int ant_nr)
         ants[ant_nr].visited[ants[ant_nr].x][ants[ant_nr].y]=1;
         cluster_nodes--; 
     } 
-    cout<<"> ant "<<ant_nr<< " visited cluster "<<clusters[ants[ant_nr].x][ants[ant_nr].y]<<endl;
-    cout<<"position "<<ants[ant_nr].node_id<<":"<<ants[ant_nr].x<<","<<ants[ant_nr].y<<endl;
+    cout<<">> ant "<<ant_nr<< " visited cluster "<<clusters[ants[ant_nr].x][ants[ant_nr].y]<<endl;
+    cout<<"Ant is at position "<<ants[ant_nr].node_id<<":"<<ants[ant_nr].x<<","<<ants[ant_nr].y<<"\n\n";
 }
 
 void update_final_solution()
@@ -279,7 +279,7 @@ void update_final_solution()
 
         }
         cout<<"ant"<<q<<" had the solution:";
-        for(int w=1;w<=node_nr;w++)
+        for(int w=1;w<=node_nr+1;w++)
         {
             cout<<ants[q].solution[w]<<"->";
             if(update_solution)
@@ -290,16 +290,30 @@ void update_final_solution()
     }   
 }
 
+void calculate_probability(int node1,int node2,double *probability)
+{
+    int i,j;
+    float sum=0;
+    for(i=1;i<=node_nr;i++)
+    {
+        if(i!=node1 && i!=node2)
+            sum+=pow(pheromone[node1][i],2)*pow(sqrt( pow(( nodes[node1].x - nodes[i].x),2) + pow(( nodes[node1].y),2 - nodes[i].y) ),2);
+        //cout<<sum<<endl;
+    }
+    //cout<<"----"<<double(pow(pheromone[node1][i],2)*pow(sqrt( pow(( nodes[node1].x - nodes[node2].x),2) + pow(( nodes[node1].y),2 - nodes[node2].y) ),2))<<endl;
+    *probability=(pow(pheromone[node1][i],2)*pow(sqrt( pow(( nodes[node1].x - nodes[node2].x),2) + pow(( nodes[node1].y),2 - nodes[node2].y) ),2))/sum;
+}
 void run_aco()
 {
     int x,y,tmp;
-    float dist,h,average, probability; 
+    float dist,h,average;
+    double probability; 
     for(int i=1 ; i<=iterations; i++)
     {
-        cout<<">> Starting iteration "<<i<<endl;
-        cout<<">> (Re)Setting variables\n";
+        cout<<">>> Starting iteration "<<i<<endl;
+        cout<<">>> (Re)Setting variables\n";
         reset();
-        cout<<">> Positioning ants\n";
+        cout<<">>> Positioning ants\n";
         locate_ants();
         //while(!ants_created_solution())
         for(int j=1; j<=ants_number; j++)
@@ -310,12 +324,14 @@ void run_aco()
                     shortest_path_within_cluster(j);
                 else 
                 {
-                    cout<<"> Moving (cluster change) ant number "<<j<<" currently on "<<ants[j].node_id<<":"<<ants[j].x<<","<<ants[j].y<<endl;
+                    cout<<">> Moving (cluster change) ant number "<<j<<" currently on "<<ants[j].node_id<<":"<<ants[j].x<<","<<ants[j].y<<endl;
                     tmp=0;
                     dist=std::numeric_limits<float>::max();
                     h=std::numeric_limits<float>::max();
                     for(int k=1; k<=node_nr; k++)
                     {
+                        calculate_probability(ants[j].node_id,k, &probability);
+                        //cout<<"probability: "<<probability<<endl;
                         if ( ants[j].node_id != k && 
                             nodes[k].cluster != nodes[ants[j].node_id].cluster && 
                             !ants[j].visited[nodes[k].x][nodes[k].y] &&
@@ -340,12 +356,22 @@ void run_aco()
                         ants[j].visited[ants[j].x][ants[j].y]=1;
                     }
                 } 
-        }
+            //adding 1st node as final node
+            cout<<">> Adding starting node at the end of solution! \n";
+            ants[j].p++;
+            tmp=ants[j].solution[1];
+            ants[j].solution[ants[j].p]=tmp;
+            ants[j].road_length+=sqrt( pow((nodes[tmp].x - ants[j].x),2) + pow((nodes[tmp].y - ants[j].y),2) );;
+            ants[j].node_id=tmp;
+            ants[j].x=nodes[tmp].x;
+            ants[j].y=nodes[tmp].y;
+        }// end of ants loop
+        
         update_pheromone();
         cout<<"After iteration "<<i<<endl;
         update_final_solution();
         cout<<endl;
-    } 
+    }//end of iterations loop
 }
   
 void solution()
@@ -355,8 +381,7 @@ void solution()
     cout<<"\n The nodes that form this path are: ";
     for(i=1;i<=node_nr;i++)
         cout<<final_solution[i]<<"->";
-    
-    cout<<final_solution[1]<<endl;
+    cout<<final_solution[node_nr+1]<<endl;
 }
 
 int main(int argc, char** argv) {
@@ -373,7 +398,7 @@ int main(int argc, char** argv) {
     display_nodes();
     cluster_nodes();
     display_clusters();
-     
+    
     set_pher();
     
     cout<<"Starting algorithm...";
