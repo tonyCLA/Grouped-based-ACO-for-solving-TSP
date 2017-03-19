@@ -38,7 +38,7 @@ struct Nodes {
 int clusters[100][100],
     final_solution[100],
     node_nr,
-    iterations=3, 
+    iterations=5, 
     ants_number=4;
 
 float pheromone[100][100],
@@ -57,18 +57,10 @@ struct Nodes nodes[100];
 
 void initialize()
 {
-    std::fstream nodes_file("graph_nodes.txt", std::ios_base::in); //D:
+    std::fstream nodes_file("small_dataset2.txt", std::ios_base::in); //D:
 
     int a,b;
     node_nr=1;
-    
-    //setting 
-    //for(int i=1;i<=node_nr;i++)
-    //    for(int j=1; j<=node_nr; j++)
-    //    {
-    //        clusters[i][j]=0;
-    //        pheromone[i][j]=0;
-    //    }
     
     cout<<"Getting nodes coordinates from file!\n";
     while (nodes_file >> a >> b)
@@ -168,6 +160,16 @@ void locate_ants()
         }
 }
 
+void evaporate_pheromone()
+{
+    for(int i=1;i<=node_nr;i++)
+        for(int j=1;j<=node_nr;j++)
+        {
+            if(pheromone[i][j]>0.2)
+                pheromone[i][j]-=0.2; 
+        }
+}
+
 void update_pheromone()
 {
     int i,j;
@@ -177,6 +179,7 @@ void update_pheromone()
             if(i!=j && ants[i].solution[j]!=ants[i].solution[j-1])
                 pheromone[ants[i].solution[j-1]][ants[i].solution[j]]+=0.5; 
         }
+    evaporate_pheromone();
 }
 
 //returns the number of nodes in a cluster=
@@ -230,7 +233,7 @@ void shortest_path_within_cluster(int ant_nr)
 {
     float min_dist;
     int tmp,x,y;
-    cout<<">> ant moving in cluster "<<clusters[ants[ant_nr].x][ants[ant_nr].y]<<endl;
+    cout<<"\n>> ant moving in cluster "<<clusters[ants[ant_nr].x][ants[ant_nr].y]<<endl;
     int cluster_nodes=get_cluster_nodes(clusters[ants[ant_nr].x][ants[ant_nr].y],ant_nr);
     //cout<<cluster_nodes<<endl;
     while(cluster_nodes>0)
@@ -290,24 +293,28 @@ void update_final_solution()
     }   
 }
 
-void calculate_probability(int node1,int node2,double *probability)
+void calculate_probability(int node1,int node2,float *probability,int ant_id)
 {
     int i,j;
+    bool is_in_solution=false;
     float sum=0;
     for(i=1;i<=node_nr;i++)
     {
+        is_in_solution=false;
         if(i!=node1 && i!=node2)
-            sum+=pow(pheromone[node1][i],2)*pow(sqrt( pow(( nodes[node1].x - nodes[i].x),2) + pow(( nodes[node1].y),2 - nodes[i].y) ),2);
-        //cout<<sum<<endl;
+            for(j=1;j<=ants[ant_id].p;j++)
+                if(ants[ant_id].solution[j]==i)
+                    is_in_solution=true;
+        if (!is_in_solution)    
+            sum+=pow( sqrt(pow((nodes[node1].x - nodes[i].x),2) + pow((nodes[node1].y - nodes[i].y),2) ), 4  )  *  pow(pheromone[node1][i],2);
     }
-    //cout<<"----"<<double(pow(pheromone[node1][i],2)*pow(sqrt( pow(( nodes[node1].x - nodes[node2].x),2) + pow(( nodes[node1].y),2 - nodes[node2].y) ),2))<<endl;
-    *probability=(pow(pheromone[node1][i],2)*pow(sqrt( pow(( nodes[node1].x - nodes[node2].x),2) + pow(( nodes[node1].y),2 - nodes[node2].y) ),2))/sum;
+    *probability=pow( sqrt(pow((nodes[node1].x - nodes[node2].x),2) + pow((nodes[node1].y - nodes[node2].y),2) ), 4  )  *  pow(pheromone[node1][node2],2)/sum;
 }
+
 void run_aco()
 {
     int x,y,tmp;
-    float dist,h,average;
-    double probability; 
+    float dist,probability, highest_probability; 
     for(int i=1 ; i<=iterations; i++)
     {
         cout<<">>> Starting iteration "<<i<<endl;
@@ -324,23 +331,23 @@ void run_aco()
                     shortest_path_within_cluster(j);
                 else 
                 {
-                    cout<<">> Moving (cluster change) ant number "<<j<<" currently on "<<ants[j].node_id<<":"<<ants[j].x<<","<<ants[j].y<<endl;
+                    cout<<"\n>> Moving (cluster change) ant number "<<j<<" currently on "<<ants[j].node_id<<":"<<ants[j].x<<","<<ants[j].y<<endl;
                     tmp=0;
                     dist=std::numeric_limits<float>::max();
-                    h=std::numeric_limits<float>::max();
+                    highest_probability=std::numeric_limits<float>::max();
                     for(int k=1; k<=node_nr; k++)
                     {
-                        calculate_probability(ants[j].node_id,k, &probability);
-                        //cout<<"probability: "<<probability<<endl;
+                        calculate_probability(ants[j].node_id,k, &probability, j);
+                        cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
                         if ( ants[j].node_id != k && 
                             nodes[k].cluster != nodes[ants[j].node_id].cluster && 
-                            !ants[j].visited[nodes[k].x][nodes[k].y] &&
-                            nodes[k].x != nodes[k].y)
-                    //the code under sqrt function is basically euclidian distance between 2 points
-                        if( sqrt( pow(( ants[j].x - nodes[k].x),2) + pow(( ants[j].y),2 - nodes[k].y) )/ pheromone[ants[j].node_id][k] < h)
+                            !ants[j].visited[nodes[k].x][nodes[k].y])
+                        if( probability < highest_probability)
                         {
+                            cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
+                        
                             tmp=k;
-                            h=sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) )/ pheromone[ants[j].node_id][k];
+                            highest_probability=probability;
                             dist=sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) );
                         }        
                     }
@@ -361,10 +368,11 @@ void run_aco()
             ants[j].p++;
             tmp=ants[j].solution[1];
             ants[j].solution[ants[j].p]=tmp;
-            ants[j].road_length+=sqrt( pow((nodes[tmp].x - ants[j].x),2) + pow((nodes[tmp].y - ants[j].y),2) );;
+            ants[j].road_length+=sqrt( pow((nodes[tmp].x - ants[j].x),2) + pow((nodes[tmp].y - ants[j].y),2) );
             ants[j].node_id=tmp;
             ants[j].x=nodes[tmp].x;
             ants[j].y=nodes[tmp].y;
+            cout<<"\n\n";
         }// end of ants loop
         
         update_pheromone();

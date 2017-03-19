@@ -12,8 +12,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>graph_nodes.txt</itemPath>
       <itemPath>main.cpp</itemPath>
+      <itemPath>small_dataset1.txt</itemPath>
+      <itemPath>small_dataset2.txt</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -37,9 +38,11 @@
       </toolsSet>
       <compileType>
       </compileType>
-      <item path="graph_nodes.txt" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="small_dataset1.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="small_dataset2.txt" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -62,9 +65,11 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="graph_nodes.txt" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="small_dataset1.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="small_dataset2.txt" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>
