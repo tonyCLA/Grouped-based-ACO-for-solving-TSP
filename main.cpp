@@ -338,13 +338,13 @@ void run_aco()
                     for(int k=1; k<=node_nr; k++)
                     {
                         calculate_probability(ants[j].node_id,k, &probability, j);
-                        cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
+                        //cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
                         if ( ants[j].node_id != k && 
                             nodes[k].cluster != nodes[ants[j].node_id].cluster && 
                             !ants[j].visited[nodes[k].x][nodes[k].y])
                         if( probability < highest_probability)
                         {
-                            cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
+                            //cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
                         
                             tmp=k;
                             highest_probability=probability;
