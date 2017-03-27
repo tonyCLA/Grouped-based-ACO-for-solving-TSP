@@ -27,16 +27,16 @@ using namespace std;
 struct Ants {
    int node_id,x,y; // the id of the node as well as coordinates
    int solution[100], p; // current solution for this ant as a vector; p represents the progress
-   int visited[100][100]; // remember the nodes a particular ant visited
+   bool visited[100]; // remember the nodes a particular ant visited
    float road_length; // total distance of the solution
 }; 
 
 struct Nodes {
-    int x,y, cluster; // coordinates and cluster number
+    int c; //cluster number
+    float x,y; //node coordinates(real numbers)
 };
 
-int clusters[100][100],
-    final_solution[100],
+int final_solution[100],
     node_nr,
     iterations=5, 
     ants_number=4;
@@ -68,7 +68,7 @@ void initialize()
         printf("%d %d", a, b);
         nodes[node_nr].x=a;
         nodes[node_nr].y=b;
-        clusters[a][b]=node_nr;// marking each node as a separate cluster;
+        nodes[node_nr].c=node_nr;// marking each node as a separate cluster;
         node_nr++;
         cout<<endl;
     }
@@ -89,8 +89,7 @@ void display_clusters()
     cout<<"Clusters will be represent as a matrix:\n";
     for(int i=1; i<=node_nr; i++ , cout<<endl)
     {
-        for(int j=1; j<=node_nr; j++ )
-            cout<<clusters[i][j]<<" ";
+        cout<<"node "<<i<<" in cluster : "<<nodes[i].c<<" ";
     }
 }
 
@@ -107,17 +106,14 @@ void display_pheromone_matrix()
 //resetting all the variables that are going to be used for next iteration
 void reset()
 {
-    int i,j,k;
+    int i,j;
     
     for(i=1; i<=ants_number; i++)
     {
         ants[i].p=0;
         ants[i].road_length=0;
         for(j=1;j<=node_nr;j++)
-            for(k=1; k<=node_nr; k++)
-            {
-                ants[i].visited[j][k]=0;
-            }
+                ants[i].visited[j]=false;
     }
 }
 
@@ -134,14 +130,13 @@ void cluster_nodes()
     int cluster_nr=1;
     for(int i=1;i<=node_nr;i++)
         {
-            cluster_nr=clusters[nodes[i].x][nodes[i].y];
+            cluster_nr=nodes[i].c;
             
             for (int j=i+1; j<=node_nr; j++)
                 //the code under sqrt function is basically euclidian distance between 2 points
                 if ( sqrt( pow((nodes[i].x - nodes[j].x),2) + pow((nodes[i].y - nodes[j].y),2) ) <= threshold )
                 {
-                    clusters[nodes[j].x][nodes[j].y]=cluster_nr;
-                    nodes[j].cluster=cluster_nr;
+                    nodes[j].c=cluster_nr;
                 }                            
             }                                
 }
@@ -156,7 +151,7 @@ void locate_ants()
         ants[i].y=nodes[rand_pos].y;
         ants[i].p++;
         ants[i].solution[ants[i].p]=rand_pos;
-        ants[i].visited[nodes[rand_pos].x][nodes[rand_pos].y]=1;
+        ants[i].visited[rand_pos]=true;
         }
 }
 
@@ -172,23 +167,25 @@ void evaporate_pheromone()
 
 void update_pheromone()
 {
-    int i,j;
-    for(i=1;i<=ants_number;i++)
-        for(j=2;j<=ants[i].p;j++)
+    int i,ant_id=1;
+    for(i=2;i<=ants_number;i++)
+        if(ants[i].road_length<ants[ant_id].road_length)
         {
-            if(i!=j && ants[i].solution[j]!=ants[i].solution[j-1])
-                pheromone[ants[i].solution[j-1]][ants[i].solution[j]]+=0.5; 
+            ant_id=i;
         }
-    evaporate_pheromone();
+    for(i=2;i<=ants[ant_id].p;i++)
+    {
+        pheromone[ants[ant_id].solution[i-1]][ants[ant_id].solution[i]]+=0.5; 
+    }
+evaporate_pheromone();
 }
 
 //returns the number of nodes in a cluster=
 int get_cluster_nodes(int cluster_id, int ant_id)
 {
-    int i,j, nr=0;
+    int i, nr=0;
     for(i=1;i<=node_nr;i++)
-        for(j=1;j<=node_nr;j++)
-            if(clusters[i][j]==cluster_id && ants[ant_id].visited[i][j]==0)nr++;
+        if(nodes[i].c==cluster_id && ants[ant_id].visited[i]==false)nr++;
     
     return nr;
 }
@@ -196,10 +193,9 @@ int get_cluster_nodes(int cluster_id, int ant_id)
 //checks if all nodes from a cluster are visited
 int check_cluster_visited(int cluster_id, int ant_id)
 {
-    int i,j,nr=0;
+    int i,nr=0;
     for(i=1;i<=node_nr;i++)
-        for(j=1;j<=node_nr;j++)
-            if(ants[ant_id].visited[i][j]==0 && clusters[i][j]==cluster_id)return 1;
+        if(ants[ant_id].visited[i]==false && nodes[i].c==cluster_id)return 1;
         
         return 0;
 }
@@ -211,8 +207,7 @@ int visited_all_nodes(int ant_id)
     int i,j;
     
     for(i=1;i<=node_nr;i++)
-        for(j=1;j<=node_nr;j++)
-            if(ants[ant_id].visited[i][j]==0 && clusters[i][j]!=0) return 1;
+        if(ants[ant_id].visited[i]==0 && nodes[i].c!=false) return 1;
         
         return 0;
 }
@@ -233,8 +228,8 @@ void shortest_path_within_cluster(int ant_nr)
 {
     float min_dist;
     int tmp,x,y;
-    cout<<"\n>> ant moving in cluster "<<clusters[ants[ant_nr].x][ants[ant_nr].y]<<endl;
-    int cluster_nodes=get_cluster_nodes(clusters[ants[ant_nr].x][ants[ant_nr].y],ant_nr);
+    cout<<"\n>> ant moving in cluster "<<nodes[ants[ant_nr].node_id].c<<endl;
+    int cluster_nodes=get_cluster_nodes(nodes[ants[ant_nr].node_id].c,ant_nr);
     //cout<<cluster_nodes<<endl;
     while(cluster_nodes>0)
     {
@@ -242,13 +237,10 @@ void shortest_path_within_cluster(int ant_nr)
         min_dist=std::numeric_limits<float>::max();
         cout<<">> Moving (within cluster) ant number "<<ant_nr<<" currently on "<<ants[ant_nr].node_id<<":"<<ants[ant_nr].x<<","<<ants[ant_nr].y<<endl;
         for (int j=1; j<=node_nr; j++)
-        {
-            x=nodes[j].x;
-            y=nodes[j].y;
-            
-            if(ants[ant_nr].visited[x][y]==0 && 
+        {   
+            if(ants[ant_nr].visited[j]==0 && 
                ants[ant_nr].node_id!=j && 
-               clusters[ants[ant_nr].x][ants[ant_nr].y] == clusters[x][y]) 
+               nodes[ants[ant_nr].node_id].c == nodes[j].c) 
                 if (sqrt( pow((ants[ant_nr].x - nodes[j].x),2) + pow((ants[ant_nr].y - nodes[j].y),2) ) < min_dist)
                     {
                         min_dist=sqrt( pow((ants[ant_nr].x - nodes[j].x),2) + pow((ants[ant_nr].y - nodes[j].y),2) );
@@ -262,10 +254,10 @@ void shortest_path_within_cluster(int ant_nr)
         ants[ant_nr].node_id=tmp;
         ants[ant_nr].x=nodes[tmp].x;
         ants[ant_nr].y=nodes[tmp].y;
-        ants[ant_nr].visited[ants[ant_nr].x][ants[ant_nr].y]=1;
+        ants[ant_nr].visited[tmp]=true;
         cluster_nodes--; 
     } 
-    cout<<">> ant "<<ant_nr<< " visited cluster "<<clusters[ants[ant_nr].x][ants[ant_nr].y]<<endl;
+    cout<<">> ant "<<ant_nr<< " visited cluster "<<nodes[ants[ant_nr].node_id].c<<endl;
     cout<<"Ant is at position "<<ants[ant_nr].node_id<<":"<<ants[ant_nr].x<<","<<ants[ant_nr].y<<"\n\n";
 }
 
@@ -327,7 +319,7 @@ void run_aco()
         {
             //calculate shortest path within a cluster
             while(ants[j].p<node_nr)
-                if(check_cluster_visited( clusters[ants[j].x][ants[j].y], j) )
+                if(check_cluster_visited( nodes[ants[j].node_id].c, j) )
                     shortest_path_within_cluster(j);
                 else 
                 {
@@ -340,8 +332,8 @@ void run_aco()
                         calculate_probability(ants[j].node_id,k, &probability, j);
                         //cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
                         if ( ants[j].node_id != k && 
-                            nodes[k].cluster != nodes[ants[j].node_id].cluster && 
-                            !ants[j].visited[nodes[k].x][nodes[k].y])
+                            nodes[k].c != nodes[ants[j].node_id].c && 
+                            !ants[j].visited[k])
                         if( probability < highest_probability)
                         {
                             //cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
@@ -360,7 +352,7 @@ void run_aco()
                         ants[j].node_id=tmp;
                         ants[j].x=nodes[tmp].x;
                         ants[j].y=nodes[tmp].y;
-                        ants[j].visited[ants[j].x][ants[j].y]=1;
+                        ants[j].visited[tmp]=true;
                     }
                 } 
             //adding 1st node as final node
