@@ -57,20 +57,18 @@ struct Nodes nodes[100];
 
 void initialize()
 {
-    std::fstream nodes_file("small_dataset2.txt", std::ios_base::in); //D:
+    std::fstream nodes_file("small_dataset1.txt", std::ios_base::in); //D:
 
-    int a,b;
+    float a,b;
     node_nr=1;
     
-    cout<<"Getting nodes coordinates from file!\n";
+    cout<<"\nGetting nodes coordinates from file!\n";
     while (nodes_file >> a >> b)
     {
-        printf("%d %d", a, b);
         nodes[node_nr].x=a;
         nodes[node_nr].y=b;
         nodes[node_nr].c=node_nr;// marking each node as a separate cluster;
         node_nr++;
-        cout<<endl;
     }
     node_nr--;
 }
@@ -86,7 +84,7 @@ void display_nodes()
 
 void display_clusters()
 {
-    cout<<"Clusters will be represent as a matrix:\n";
+    cout<<"Clusters:\n";
     for(int i=1; i<=node_nr; i++ , cout<<endl)
     {
         cout<<"node "<<i<<" in cluster : "<<nodes[i].c<<" ";
@@ -285,6 +283,30 @@ void update_final_solution()
     }   
 }
 
+//takes a vector as parameter, with following attributes;
+//the position of each element in vector represents the node IDs
+//the value of each vector represents the probability
+//second parameter represents the number of nodes
+int roulette_selection(float v[],int n)
+{
+    int i;
+    float sum=0,rand_n;
+    for(int i=1;i<=n;i++)
+        sum+=v[i];
+    
+    rand_n=static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/sum));
+    sum=0;
+    cout<<"rand_n - "<<rand_n<<endl;
+    for(int i=1;i<=n;i++)
+    {
+        if(sum<rand_n && sum+v[i]>rand_n)
+            return i;
+        sum+=v[i];
+    }
+    
+    return 0;
+}
+
 void calculate_probability(int node1,int node2,float *probability,int ant_id)
 {
     int i,j;
@@ -301,6 +323,7 @@ void calculate_probability(int node1,int node2,float *probability,int ant_id)
             sum+=pow( sqrt(pow((nodes[node1].x - nodes[i].x),2) + pow((nodes[node1].y - nodes[i].y),2) ), 4  )  *  pow(pheromone[node1][i],2);
     }
     *probability=pow( sqrt(pow((nodes[node1].x - nodes[node2].x),2) + pow((nodes[node1].y - nodes[node2].y),2) ), 4  )  *  pow(pheromone[node1][node2],2)/sum;
+    
 }
 
 void run_aco()
@@ -334,14 +357,18 @@ void run_aco()
                         if ( ants[j].node_id != k && 
                             nodes[k].c != nodes[ants[j].node_id].c && 
                             !ants[j].visited[k])
-                        if( probability < highest_probability)
                         {
-                            //cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
-                        
-                            tmp=k;
-                            highest_probability=probability;
-                            dist=sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) );
-                        }        
+                            //cout<<probability<<endl;
+                            if( probability < highest_probability)
+                            {
+
+                                //cout<<ants[j].node_id<<","<<k<<"=> probability: "<<probability<<endl;
+
+                                tmp=k;
+                                highest_probability=probability;
+                                dist=sqrt( pow((nodes[k].x - ants[j].x),2) + pow((nodes[k].y - ants[j].y),2) );
+                            }
+                        }
                     }
                     if(tmp!=0)
                     {
@@ -385,9 +412,21 @@ void solution()
 }
 
 int main(int argc, char** argv) {
+    
+    float v[6];
+    v[1]=0.5;
+    v[2]=0.3;
+    v[3]=0.7;
+    v[4]=0.1;
+    v[5]=0.2;
+    for(int i=1;i<=10;i++)
+    {
+    cout<<roulette_selection(v,5)<<" - "<<static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/1.8))<<endl;
+    }
+    
     cout<<"Initialize matrices";
     initialize();
-    cout<<"Matrices created! Press any key to continue...";
+    cout<<"Core variables set! Press any key to continue...";
     getchar();
     
     cout<<"Please specify distance threshold for clustering:\n";
