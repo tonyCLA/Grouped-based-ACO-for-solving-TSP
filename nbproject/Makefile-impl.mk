@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Major Project
+PROJECTNAME=Grouped-based-ACO-for-solving-TSP
 
 # Active Configuration
 DEFAULTCONF=Debug
