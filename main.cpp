@@ -42,11 +42,11 @@ struct Clusters {
 };
 
 
-void initialize_data(vector<Nodes> &nodel, int &nr_nodes, vector<Ants> &antl, int &nr_ants, vector<vector<float> > &pher, vector<int> &final_sol)
+void initialize_data(vector<Nodes> &nodel, int &nr_nodes, vector<Ants> &antl, int &nr_ants, vector<vector<float> > &pher, vector<int> &partial_sol)
 {
     int i,j;
     pher.resize(nr_nodes+1);
-    final_sol.resize(nr_nodes+1);
+    partial_sol.resize(nr_nodes+1);
     
     //initialize pheromone matrix
     for(i=1;i<=nr_nodes;i++)
@@ -68,11 +68,11 @@ void set_nodes(vector<Nodes> &nodel, int &nr_nodes)
 {
     std::fstream nodes_file("small_dataset1.txt", std::ios_base::in); //D:
 
-    float a,b;
+    float a,b,c;
     nr_nodes=1;
     
     cout<<"\nGetting nodes coordinates from file!\n";
-    while (nodes_file >> a >> b)
+    while (nodes_file /*>> c*/ >> a >> b)
     {
         nodel.resize(nr_nodes+1);
         nodel[nr_nodes].id=nr_nodes;
@@ -89,7 +89,7 @@ void display_nodes(vector<Nodes> nodel, int nr_nodes)
     cout<<"Number of nodes is "<<nr_nodes<<endl;
     for(int i=1; i<=nr_nodes;i++)
     {
-        cout<<nodel[i].x<<" - "<<nodel[i].y<<"("<<nodel[i].c<<")\n";
+        cout<<nodel[i].c<<" ("<<nodel[i].x<<", "<<nodel[i].y<<")\n";
     }
 }
 
@@ -153,7 +153,7 @@ void display_clusters(vector<Clusters> clusterl, int nr_clusters)
     cout<<"There are "<< nr_clusters<<" clusters:\n";
     for(int i=1; i<=nr_clusters; i++ , cout<<endl)
     {
-        cout<<"cluster "<<clusterl[i].cluster_id<<" has the following nodes ("<<clusterl[i].n_nodes<<")\n";
+        cout<<"cluster "<<i<<" has the following nodes ("<<clusterl[i].n_nodes<<")\n";
         for(int j=1;j<=clusterl[i].n_nodes;j++)
             cout<<clusterl[i].node_list[j]<<",";
     }
@@ -290,29 +290,24 @@ void set_probabilities( vector<float> &prob, vector<int> av_nodes, int nr_av_nod
     int i,j,x1,x2,y1,y2;
     float sum;
     prob.resize(nr_av_nodes/2+1);
+    
+    for(j=1;j<=nr_av_nodes/2;j++)
+    {
+        x1=nodel[av_nodes[j*2]].x;
+        x2=nodel[av_nodes[j*2-1]].x;
+        y1=nodel[av_nodes[j*2]].y;
+        y2=nodel[av_nodes[j*2-1]].y;
+        sum+=pow( 1/sqrt(pow((x1 - x2),2) + pow((y1 - y2),2) ), 2  )  *  pow(pher[av_nodes[j*2]][av_nodes[j*2-1]],2);
+
+    }
+    
     for(i=1;i<=nr_av_nodes/2;i++)
     {
-        prob[i]=0;
-        sum=0;
-        for(j=1;j<=nr_av_nodes/2;j++)
-        {
-            x1=nodel[av_nodes[j*2]].x;
-            x2=nodel[av_nodes[j*2-1]].x;
-            y1=nodel[av_nodes[j*2]].y;
-            y2=nodel[av_nodes[j*2-1]].y;
-            //cout<<x1<<y1<<x2<<y2<<endl;
-            if(i!=j)
-            {
-                sum+=pow( 1/sqrt(pow((x1 - x2),2) + pow((y1 - y2),2) ), 2  )  *  pow(pher[av_nodes[j*2]][av_nodes[j*2-1]],2);
-            }
-        }
-        
         x1=nodel[av_nodes[i*2]].x;
         x2=nodel[av_nodes[i*2-1]].x;
         y1=nodel[av_nodes[i*2]].y;
         y2=nodel[av_nodes[i*2-1]].y;
-        prob[i]=1/ pow( sqrt(pow((x1 - x2),2) + pow((y1 - y2),2) ), 2  )  *  pow(pher[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
-
+        prob[i]= pow( 1/sqrt(pow((x1 - x2),2) + pow((y1 - y2),2) ), 2  )  *  pow(pher[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
     }
 }
 
@@ -340,7 +335,7 @@ void move_ant(Ants &antl, int exit_node, int new_node, vector<Nodes> &nodel, int
     //cout<<"next node >>>>>> "<<new_node<<endl;
     if(new_node !=0 )
     {
-        //cout<<"> next node is "<<new_node<<": "<<nodel[new_node].x<<","<<nodel[new_node].y<<endl;
+        cout<<"> next node is "<<new_node<<": "<<nodel[new_node].x<<","<<nodel[new_node].y<<endl;
         antl.sol_elements++;
         antl.solution.resize(antl.sol_elements+1);
         antl.solution[antl.sol_elements]=new_node;
@@ -406,10 +401,10 @@ void update_final_solution(vector<Ants> antl, int nr_ants, vector<int> &solution
         }
 }
 
-void run_aco(int iter, vector<Nodes> nodel, int nr_nodes, vector<Ants> &antl, int &nr_ants, vector<vector<float> > &pher, vector<int> &final_sol, float &fs_dist, vector<Clusters> clusterl, int nr_clusters)
+void run_aco(int iter, vector<Nodes> nodel, int nr_nodes, vector<Ants> &antl, int &nr_ants, vector<vector<float> > &pher, vector<int> &partial_sol, float &ps_dist, vector<Clusters> clusterl, int nr_clusters)
 {
     int x,y,tmp,nr_of_avnodes=0;
-    fs_dist=std::numeric_limits<float>::max();
+    ps_dist=std::numeric_limits<float>::max();
     vector<float> probabilities;
     vector<int> available_nodes;
     
@@ -431,9 +426,9 @@ void run_aco(int iter, vector<Nodes> nodel, int nr_nodes, vector<Ants> &antl, in
                 set_probabilities(probabilities,available_nodes,nr_of_avnodes, nodel, pher);
                 
                 //gives more verbosity to output
-                //cout<<"> Ant located on "<<antl[j].node_id<<" has the following options (routes)"<<nr_of_avnodes/2<<endl;
-                //for(int k=1;k<=nr_of_avnodes;k+=2)
-                //    cout<<probabilities[k/2+1]<<" | "<<available_nodes[k]<<"->"<<available_nodes[k+1]<<endl;
+                cout<<"> Ant located on "<<antl[j].node_id<<" has the following options (routes)"<<nr_of_avnodes/2<<endl;
+                for(int k=1;k<=nr_of_avnodes;k+=2)
+                    cout<<probabilities[k/2+1]<<" | "<<available_nodes[k]<<"->"<<available_nodes[k+1]<<endl;
                 
                 if(nr_of_avnodes>2)
                     tmp=roulette_selection(probabilities,nr_of_avnodes/2)*2;
@@ -452,7 +447,7 @@ void run_aco(int iter, vector<Nodes> nodel, int nr_nodes, vector<Ants> &antl, in
         update_pheromone(nodel, nr_nodes, antl, nr_ants,pher);
         
         cout<<"After iteration "<<i<<"(total travelled distance between clusters)"<<endl;
-        update_final_solution(antl, nr_ants, final_sol, fs_dist);
+        update_final_solution(antl, nr_ants, partial_sol, ps_dist);
         for(y=1;y<=nr_ants;y++)
         {
             cout<<"Ant final solution ("<<antl[y].road_length<<"): ";
@@ -463,16 +458,74 @@ void run_aco(int iter, vector<Nodes> nodel, int nr_nodes, vector<Ants> &antl, in
     }//end of iterations loop
 }
 
+vector<int> construct_final_solution(vector<int> ps, int nr_elem, vector<Nodes> nodel, int nr_nodes, vector<Clusters> clusterl)
+{
+    int i,j,k, current_cluster, current_node, pos=1, cpos, x1,x2, y1, y2;
+    double min_dist;
+    vector<int> final_sol;
+    vector<bool> visited;
+    final_sol.resize(nr_nodes+2);
+    
+    for(k=1;k<nr_elem;k++)
+    {
+        min_dist=std::numeric_limits<float>::max();
+        current_cluster=nodel[ps[k]].c;
+        current_node=ps[k];
+        x1=nodel[current_node].x;
+        y1=nodel[current_node].y;
+        final_sol[pos]=current_node;
+      
+        visited.resize(clusterl[current_cluster].n_nodes+1);
+        pos++;
+        
+        for(i=1;i<=clusterl[current_cluster].n_nodes;i++)
+            if(clusterl[current_cluster].node_list[i]==current_node)
+                visited[i]=true;
+            else visited[i]=false;
+        
+        for(j=1;j<clusterl[current_cluster].n_nodes;j++)
+        {
+            min_dist=std::numeric_limits<float>::max();
+            for(i=1;i<=clusterl[current_cluster].n_nodes;i++)
+            {
+                x2=nodel[clusterl[current_cluster].node_list[i]].x;
+                y2=nodel[clusterl[current_cluster].node_list[i]].y;
+                if(sqrt( pow((x1-x2),2) + pow((y1-y2),2) ) < min_dist && visited[i]==false)
+                {
+                    min_dist=sqrt( pow((x1-x2),2) + pow((y1-y2),2));
+                    cpos=i;
+                }
+            }
+            visited[cpos]=true;
+            final_sol[pos]=clusterl[current_cluster].node_list[cpos];
+            current_node=final_sol[pos];
+            x1=nodel[current_node].x;
+            y1=nodel[current_node].y;
+            pos++;
+        }
+    }
+    final_sol[pos]=final_sol[1];
+    return final_sol;
+}
+
+float calculate_length(vector<int> solution, vector<Nodes> all_nodes, int nr_nodes)
+{
+    float total=0;
+    for(int i=2;i<=nr_nodes+1;i++)
+            total+=sqrt( pow((all_nodes[solution[i]].x-all_nodes[solution[i-1]].x),2) + pow((all_nodes[solution[i]].y-all_nodes[solution[i-1]].y),2) );
+    return total;
+}
+
 int main(int argc, char** argv) {
 
     int node_nr,
     iterations=5, 
-    ant_nr=3,
+    ant_nr=4,
     cluster_nr;
 
     float threshold=2.5;
     
-    vector<int> final_solution;
+    vector<int> partial_solution, final_solution;
     float solution_length;
     
     vector<vector<float> > pheromone;
@@ -486,7 +539,7 @@ int main(int argc, char** argv) {
     set_nodes(nodes,node_nr);
     
     cout<<">> Set data boundaries:\n";
-    initialize_data(nodes, node_nr, ants, ant_nr, pheromone , final_solution);
+    initialize_data(nodes, node_nr, ants, ant_nr, pheromone , partial_solution);
     
     cout<<"\n>> Display nodes:\n";
     display_nodes(nodes, node_nr);
@@ -502,25 +555,24 @@ int main(int argc, char** argv) {
     cout<<"\n>> Set pheromone levels.\n";
     set_pher(pheromone, node_nr);
     
-    //cout<<"\n>> Display pheromone matrix:\n";
-    //display_pheromone(pheromone,node_nr);
     
     cout<<"\n>> Run ACO:\n ";
-    run_aco(iterations, nodes, node_nr, ants, ant_nr, pheromone, final_solution, solution_length, clusters, cluster_nr);
+    run_aco(iterations, nodes, node_nr, ants, ant_nr, pheromone, partial_solution, solution_length, clusters, cluster_nr);
     
-    cout<<"\n\n Final solution found with given parameters is ("<<solution_length<<"):";
+    cout<<"\n\n Partial solution (made of clusters) found with given parameters is ("<<solution_length<<"):";
     for(int i=1;i<=cluster_nr+1;i++)
-        cout<<final_solution[i]<<"->";
+        cout<<nodes[partial_solution[i]].c<<"("<<partial_solution[i]<<")"<<"->";
         
-       
+    //cout<<"\n>> Display clusters:\n";
+    //display_clusters(clusters, cluster_nr);
     
-    //--------------------------------
-    //cout<<"Locate ants\n";
-    //locate_ants(nodes, node_nr, ants, ant_nr);
-    
-    //display_ants_status(ants,ant_nr,node_nr);
-    ///
-    //cout<<"ant 1 visited all nodes:"<<check_visited(ants[1],node_nr);
+    final_solution.resize(node_nr+1);
+    final_solution=construct_final_solution(partial_solution,cluster_nr+1, nodes, node_nr, clusters);
+    cout<<"\nTotal length: "<<calculate_length(final_solution, nodes, node_nr)<<endl;
+    cout<<"Final Solution: ";
+    for(int i=1;i<=node_nr;i++)
+        cout<<final_solution[i]<<"->";
+    cout<<final_solution[node_nr+1]<<endl;
     
     return 0;
 }
