@@ -66,7 +66,7 @@ void initialize_data(vector<Nodes> &nodel, int &nr_nodes, vector<Ants> &antl, in
 
 void set_nodes(vector<Nodes> &nodel, int &nr_nodes)
 {
-    std::fstream nodes_file("small_dataset1.txt", std::ios_base::in); //D:
+    std::fstream nodes_file("dataset4.txt", std::ios_base::in); //D:
 
     float a,b,c;
     nr_nodes=1;
@@ -93,6 +93,11 @@ void display_nodes(vector<Nodes> nodel, int nr_nodes)
     }
 }
 
+float distance(float x1, float x2, float y1, float y2)
+{
+   return sqrt( pow((x1-x2),2) + pow((y1-y2),2));
+}
+
 void cluster_nodes(float threshold, vector<Nodes> &nodel, int nr_nodes)
 {
     int cluster_nr=1;
@@ -102,7 +107,7 @@ void cluster_nodes(float threshold, vector<Nodes> &nodel, int nr_nodes)
             
             for (int j=i+1; j<=nr_nodes; j++)
                 //the code under sqrt function is basically euclidian distance between 2 points
-                if ( sqrt( pow((nodel[i].x - nodel[j].x),2) + pow((nodel[i].y - nodel[j].y),2) ) < threshold )
+                if ( distance( nodel[i].x, nodel[j].x, nodel[i].y, nodel[j].y ) < threshold )
                 {
                     nodel[j].c=cluster_nr;
                 }                            
@@ -259,9 +264,9 @@ void get_possible_routes(vector<int> &av_nodes, int &nr_av_nodes, Ants antl, vec
                 {
                     x1=nodel[clusterl[i].node_list[k]].x;
                     y1=nodel[clusterl[i].node_list[k]].y;
-                    if(sqrt( pow((x1-x2),2) + pow((y1-y2),2) ) < dist)
+                    if(distance(x1,x2,y1,y2) < dist)
                     {
-                        dist=sqrt( pow((x1-x2),2) + pow((y1-y2),2) );
+                        dist=distance(x1,x2,y1,y2);
                         node1=clusterl[i].node_list[k];
                         node2=clusterl[ant_cluster].node_list[j];
                     }
@@ -297,7 +302,7 @@ void set_probabilities( vector<float> &prob, vector<int> av_nodes, int nr_av_nod
         x2=nodel[av_nodes[j*2-1]].x;
         y1=nodel[av_nodes[j*2]].y;
         y2=nodel[av_nodes[j*2-1]].y;
-        sum+=pow( 1/sqrt(pow((x1 - x2),2) + pow((y1 - y2),2) ), 2  )  *  pow(pher[av_nodes[j*2]][av_nodes[j*2-1]],2);
+        sum+=pow( 1/distance(x1,x2,y1,y2), 2  )  *  pow(pher[av_nodes[j*2]][av_nodes[j*2-1]],2);
 
     }
     
@@ -307,7 +312,7 @@ void set_probabilities( vector<float> &prob, vector<int> av_nodes, int nr_av_nod
         x2=nodel[av_nodes[i*2-1]].x;
         y1=nodel[av_nodes[i*2]].y;
         y2=nodel[av_nodes[i*2-1]].y;
-        prob[i]= pow( 1/sqrt(pow((x1 - x2),2) + pow((y1 - y2),2) ), 2  )  *  pow(pher[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
+        prob[i]= pow( 1/distance(x1,x2,y1,y2), 2  )  *  pow(pher[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
     }
 }
 
@@ -335,12 +340,12 @@ void move_ant(Ants &antl, int exit_node, int new_node, vector<Nodes> &nodel, int
     //cout<<"next node >>>>>> "<<new_node<<endl;
     if(new_node !=0 )
     {
-        cout<<"> next node is "<<new_node<<": "<<nodel[new_node].x<<","<<nodel[new_node].y<<endl;
+        //cout<<"> next node is "<<new_node<<": "<<nodel[new_node].x<<","<<nodel[new_node].y<<endl;
         antl.sol_elements++;
         antl.solution.resize(antl.sol_elements+1);
         antl.solution[antl.sol_elements]=new_node;
         //cout<<"calculate distance between"<<exit_node<<"-"<<new_node<<", and add it to solution length"<<endl;
-        antl.road_length+=sqrt( pow((nodel[new_node].x - nodel[exit_node].x),2) + pow((nodel[new_node].y - nodel[exit_node].y),2) );
+        antl.road_length+=distance(nodel[new_node].x, nodel[exit_node].x, nodel[new_node].y, nodel[exit_node].y);
         antl.node_id=new_node;
         antl.x=nodel[new_node].x;
         antl.y=nodel[new_node].y;
@@ -366,9 +371,9 @@ void update_pheromone(vector<Nodes> nodel, int nr_nodes, vector<Ants> antl, int 
             dist=std::numeric_limits<float>::max();
             for(k=1;k<=nr_nodes;k++)
             {
-                if(sqrt( pow((nodel[k].x-n2.x),2) + pow((nodel[k].y-n2.y),2) ) < dist && n1.c != n2.c && n1.c == nodel[k].c)
+                if(distance( nodel[k].x, n2.x, nodel[k].y, n2.y) < dist && n1.c != n2.c && n1.c == nodel[k].c)
                 {
-                    dist=sqrt( pow((nodel[k].x-n2.x),2) + pow((nodel[k].y-n2.y),2) );
+                    dist=distance( nodel[k].x, n2.x, nodel[k].y, n2.y);
                     copy=nodel[k];
                 }
             }
@@ -426,14 +431,13 @@ void run_aco(int iter, vector<Nodes> nodel, int nr_nodes, vector<Ants> &antl, in
                 set_probabilities(probabilities,available_nodes,nr_of_avnodes, nodel, pher);
                 
                 //gives more verbosity to output
-                cout<<"> Ant located on "<<antl[j].node_id<<" has the following options (routes)"<<nr_of_avnodes/2<<endl;
-                for(int k=1;k<=nr_of_avnodes;k+=2)
-                    cout<<probabilities[k/2+1]<<" | "<<available_nodes[k]<<"->"<<available_nodes[k+1]<<endl;
+                //cout<<"> Ant located on "<<antl[j].node_id<<" has the following options (routes)"<<nr_of_avnodes/2<<endl;
+                //for(int k=1;k<=nr_of_avnodes;k+=2)
+                //    cout<<probabilities[k/2+1]<<" | "<<available_nodes[k]<<"->"<<available_nodes[k+1]<<endl;
                 
                 if(nr_of_avnodes>2)
                     tmp=roulette_selection(probabilities,nr_of_avnodes/2)*2;
                 else tmp=2;
-                //cout<<"> Ant "<<j<<" is moving to node: "<<available_nodes[tmp]<<endl;
                 move_ant(antl[j],available_nodes[tmp-1],available_nodes[tmp], nodel, nr_nodes);
             }
             
@@ -441,20 +445,16 @@ void run_aco(int iter, vector<Nodes> nodel, int nr_nodes, vector<Ants> &antl, in
             move_ant(antl[j],antl[j].solution[antl[j].sol_elements],antl[j].solution[1], nodel, nr_nodes);
             
         }// end of ants loop
-        
-        
-        
-        update_pheromone(nodel, nr_nodes, antl, nr_ants,pher);
-        
         cout<<"After iteration "<<i<<"(total travelled distance between clusters)"<<endl;
         update_final_solution(antl, nr_ants, partial_sol, ps_dist);
         for(y=1;y<=nr_ants;y++)
         {
-            cout<<"Ant final solution ("<<antl[y].road_length<<"): ";
+            cout<<"Ant "<<y<< " final solution ("<<antl[y].road_length<<"): ";
             for(x=1;x<=antl[y].sol_elements;x++)
                 cout<<antl[y].solution[x]<<" -> ";
-            cout<<endl;
+            cout<<"\n\n";
         }
+        update_pheromone(nodel, nr_nodes, antl, nr_ants,pher); 
     }//end of iterations loop
 }
 
@@ -490,9 +490,9 @@ vector<int> construct_final_solution(vector<int> ps, int nr_elem, vector<Nodes> 
             {
                 x2=nodel[clusterl[current_cluster].node_list[i]].x;
                 y2=nodel[clusterl[current_cluster].node_list[i]].y;
-                if(sqrt( pow((x1-x2),2) + pow((y1-y2),2) ) < min_dist && visited[i]==false)
+                if(distance(x1,x2,y1,y2) < min_dist && visited[i]==false)
                 {
-                    min_dist=sqrt( pow((x1-x2),2) + pow((y1-y2),2));
+                    min_dist=distance(x1,x2,y1,y2);
                     cpos=i;
                 }
             }
@@ -512,7 +512,7 @@ float calculate_length(vector<int> solution, vector<Nodes> all_nodes, int nr_nod
 {
     float total=0;
     for(int i=2;i<=nr_nodes+1;i++)
-            total+=sqrt( pow((all_nodes[solution[i]].x-all_nodes[solution[i-1]].x),2) + pow((all_nodes[solution[i]].y-all_nodes[solution[i-1]].y),2) );
+            total+=distance(all_nodes[solution[i]].x, all_nodes[solution[i-1]].x, all_nodes[solution[i]].y, all_nodes[solution[i-1]].y);
     return total;
 }
 
@@ -573,6 +573,20 @@ int main(int argc, char** argv) {
     for(int i=1;i<=node_nr;i++)
         cout<<final_solution[i]<<"->";
     cout<<final_solution[node_nr+1]<<endl;
+    
+    float s=0;
+    s+=distance(nodes[1].x,nodes[8].x,nodes[1].y,nodes[8].x);
+    s+=distance(nodes[8].x,nodes[38].x,nodes[8].y,nodes[38].x);
+    
+    s+=distance(nodes[38].x,nodes[31].x,nodes[38].y,nodes[31].x);
+    
+    s+=distance(nodes[31].x,nodes[44].x,nodes[31].y,nodes[44].x);
+    
+    
+    s+=distance(nodes[44].x,nodes[18].x,nodes[44].y,nodes[18].x);
+    
+    
+    cout<<endl<<s;
     
     return 0;
 }
