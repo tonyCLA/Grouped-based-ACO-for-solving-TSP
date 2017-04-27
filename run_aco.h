@@ -447,9 +447,9 @@ void run_aco::start_aco()
         for(y=1;y<=nr_ants;y++)
         {
             cout<<"Ant "<<y<< " final solution ("<<ants[y].get_road_length()<<"): ";
-            for(x=1;x<=ants[y].get_sol_nr();x++)
+            for(x=1;x<ants[y].get_sol_nr();x++)
                 cout<<ants[y].solution[x]<<" -> ";
-            cout<<endl;
+            cout<<ants[y].solution[ants[y].get_sol_nr()]<<endl;
         }
         update_pheromone(); 
     }//end of iterations loop

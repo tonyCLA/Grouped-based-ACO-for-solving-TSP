@@ -436,9 +436,9 @@ void run_aco(int iter, vector<node> nodel, int nr_nodes, vector<ant> &antl, int 
         for(y=1;y<=nr_ants;y++)
         {
             cout<<"Ant "<<y<< " final solution ("<<antl[y].get_road_length()<<"): ";
-            for(x=1;x<=antl[y].get_sol_nr();x++)
+            for(x=1;x<antl[y].get_sol_nr();x++)
                 cout<<antl[y].solution[x]<<" -> ";
-            cout<<endl;
+            cout<<antl[y].solution[antl[y].get_sol_nr()]<<endl;
         }
         update_pheromone(nodel, nr_nodes, antl, nr_ants,pher); 
     }//end of iterations loop
