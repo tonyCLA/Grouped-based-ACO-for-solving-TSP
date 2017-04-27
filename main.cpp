@@ -17,6 +17,7 @@
 #include <cmath>
 #include <vector>
 #include <limits>
+#include "node.h"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ struct Ants {
 
 struct Clusters {
     int n_nodes,cluster_id;
+    Nodes centroid;
     std::vector<int> node_list;
 };
 
@@ -66,7 +68,7 @@ void initialize_data(vector<Nodes> &nodel, int &nr_nodes, vector<Ants> &antl, in
 
 void set_nodes(vector<Nodes> &nodel, int &nr_nodes)
 {
-    std::fstream nodes_file("dataset4.txt", std::ios_base::in); //D:
+    std::fstream nodes_file("small_dataset1.txt", std::ios_base::in); //D:
 
     float a,b,c;
     nr_nodes=1;
@@ -112,6 +114,11 @@ void cluster_nodes(float threshold, vector<Nodes> &nodel, int nr_nodes)
                     nodel[j].c=cluster_nr;
                 }                            
             }                                
+}
+
+void cluster_nodes2(vector<Nodes> &nodel, int nr_nodes, vector<Clusters> &clusterl, int &nr_clusters)
+{
+   
 }
 
 void set_clusters(vector<Nodes> &nodel,int nr_nodes ,vector<Clusters> &clusterl, int &nr_clusters)
@@ -508,6 +515,11 @@ vector<int> construct_final_solution(vector<int> ps, int nr_elem, vector<Nodes> 
     return final_sol;
 }
 
+void two_opt(vector<Nodes> nodel, int nr_nodes, vector<int> partial_sol, int nr_clusters, vector<int> &final_sol)
+{
+    
+}
+
 float calculate_length(vector<int> solution, vector<Nodes> all_nodes, int nr_nodes)
 {
     float total=0;
@@ -574,19 +586,22 @@ int main(int argc, char** argv) {
         cout<<final_solution[i]<<"->";
     cout<<final_solution[node_nr+1]<<endl;
     
+    /*
     float s=0;
     s+=distance(nodes[1].x,nodes[8].x,nodes[1].y,nodes[8].x);
     s+=distance(nodes[8].x,nodes[38].x,nodes[8].y,nodes[38].x);
-    
-    s+=distance(nodes[38].x,nodes[31].x,nodes[38].y,nodes[31].x);
-    
-    s+=distance(nodes[31].x,nodes[44].x,nodes[31].y,nodes[44].x);
-    
-    
+    s+=distance(nodes[38].x,nodes[31].x,nodes[38].y,nodes[31].x); 
+    s+=distance(nodes[31].x,nodes[44].x,nodes[31].y,nodes[44].x); 
     s+=distance(nodes[44].x,nodes[18].x,nodes[44].y,nodes[18].x);
-    
+   
     
     cout<<endl<<s;
+     */
+    
+    node n1,n2;
+    n1.set_coord(3,4);
+    n2.set_coord(5,4);
+    cout<<n1.calc_dist(n2);
     
     return 0;
 }
