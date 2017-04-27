@@ -16,14 +16,18 @@
 
 class cluster
 {
-    int c_nr, id;
+    int nr_nodes, id;
     node centroid;
-    std::vector<node> node_list;
+    
 public:
+    std::vector<node> node_list;
+    
     void set_id(int cid);
     int get_id(); 
-    void set_c_nr(int nr);
-    int get_c_nr();
+    void set_nr_nodes(int nr);
+    int get_nr_nodes();
+    void calculate_centroid();
+    void get_centroid();
 };
 
 
@@ -37,6 +41,15 @@ int cluster::get_id()
     return id;
 }
 
+void cluster::set_nr_nodes(int nr)
+{
+    nr_nodes=nr;
+}
+
+int cluster::get_nr_nodes()
+{
+    return nr_nodes;
+}
 
 #endif /* CLUSTER_H */
 
