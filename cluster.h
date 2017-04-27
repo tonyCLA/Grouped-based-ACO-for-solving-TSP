@@ -14,7 +14,25 @@
 #ifndef CLUSTER_H
 #define CLUSTER_H
 
+class cluster
+{
+    int id;
+    node n;
+public:
+    void set_id(int cid);
+    int get_id(); 
+};
 
+
+void cluster::set_id(int cid)
+{
+    id=cid;
+}
+
+int cluster::get_id()
+{
+    return id;
+}
 
 #endif /* CLUSTER_H */
 
