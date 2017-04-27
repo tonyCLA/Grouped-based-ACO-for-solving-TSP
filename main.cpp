@@ -150,6 +150,7 @@ void set_clusters(vector<node> &nodel,int nr_nodes ,vector<cluster> &clusterl, i
 
 void display_clusters(vector<cluster> clusterl, int nr_clusters)
 {
+    cout<<"\n>> Display clusters:\n";
     cout<<"There are "<< nr_clusters<<" clusters:\n";
     for(int i=1; i<=nr_clusters; i++ , cout<<endl)
     {
@@ -162,6 +163,7 @@ void display_clusters(vector<cluster> clusterl, int nr_clusters)
 
 void set_pher(vector<vector<float> > &pher, int nr_nodes)
 {
+    cout<<"\n>> Set pheromone levels.\n";
     for (int a=1 ; a<=nr_nodes; a++)
         for (int b=1; b<=nr_nodes; b++)
             if (a!=b)
@@ -180,6 +182,7 @@ void display_pheromone(vector<vector<float> > pher, int nr_nodes)
 
 void locate_ants(vector<node> &nodel, int &nr_nodes, vector<ant> &antl, int &nr_ants)
 {
+    cout<<">>> Positioning ants\n";
     for (int i=1; i<=nr_ants; i++)
     {   
         int rand_pos = rand() % nr_nodes + 1; // random number between 1 and node_nr;  
@@ -215,8 +218,8 @@ void display_ants_status(vector<ant> antl, int nr_ants, int nr_nodes)
 
 void reset(vector<ant> &antl, int nr_ants, int nr_nodes)
 {
+    cout<<">>> (Re)Setting variables\n";
     int i,j;
-    
     for(i=1; i<=nr_ants; i++)
     {
         antl[i].set_sol_nr(0);
@@ -399,11 +402,11 @@ void run_aco(int iter, vector<node> nodel, int nr_nodes, vector<ant> &antl, int 
     for(int i=1 ; i<=iter; i++)
     {
         cout<<">>> Starting iteration "<<i<<endl;
-        cout<<">>> (Re)Setting variables\n";
-        reset(antl, nr_ants, nr_nodes);
-        cout<<">>> Positioning ants\n";
-        locate_ants(nodel, nr_nodes, antl, nr_ants);
         
+        reset(antl, nr_ants, nr_nodes);
+        
+        locate_ants(nodel, nr_nodes, antl, nr_ants);
+        cout<<">>> Generate solution for each ant\n";
         for(int j=1; j<=nr_ants; j++)
         {
            
@@ -435,7 +438,7 @@ void run_aco(int iter, vector<node> nodel, int nr_nodes, vector<ant> &antl, int 
             cout<<"Ant "<<y<< " final solution ("<<antl[y].get_road_length()<<"): ";
             for(x=1;x<=antl[y].get_sol_nr();x++)
                 cout<<antl[y].solution[x]<<" -> ";
-            cout<<"\n\n";
+            cout<<endl;
         }
         update_pheromone(nodel, nr_nodes, antl, nr_ants,pher); 
     }//end of iterations loop
@@ -552,10 +555,10 @@ int main(int argc, char** argv) {
     
     set_clusters(nodes, node_nr , clusters, cluster_nr);
 
-    cout<<"\n>> Display clusters:\n";
+    
     display_clusters(clusters, cluster_nr);
     
-    cout<<"\n>> Set pheromone levels.\n";
+    
     set_pher(pheromone, node_nr);
     
     

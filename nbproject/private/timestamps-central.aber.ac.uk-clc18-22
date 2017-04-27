@@ -1,8 +1,9 @@
-#Thu Apr 27 17:13:07 BST 2017
+#Thu Apr 27 18:26:16 BST 2017
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\config=c1490606174456
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\pack\\pack-3eec02d90e594173fd4f2dd3218553b22d14a789.pack=c1493286664904
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\nbproject\\private\\makefile-variables.mk=c1490580301490
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\cc\\8119a5b4c4ed61188fc6a54c27c5ef3ec52b63=c1489400630140
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\d6\\2fe857aad49cf475f25708bcfc5804e8a43baa=c1493309991987
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\e8\\2104709aedc6a6fc8f23624b38b87e94346be6=c1489964384413
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\19\\89411a7a5b31b03bdcd739cc681a08943a3fe8=c1489400729361
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\bb\\e6aaeccc7fb8ffd4a40339d6b3ab60f663b672=c1489399722226
@@ -13,6 +14,7 @@ c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\makefi
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\e9\\da29a49826cf90643c06e3c90f5f7343026c63=c1493289197154
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\43\\8d20be335bcb86ba50404e4e2169982fbb8096=c1493289250679
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\a5\\c66949c5e840d86b6bff1963eacb64a6063e19=c1488884604074
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\dc\\863a639959e3d3084bd5d0ac31dea585768054=c1493309992440
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\pack\\pack-41f914c03f7a02ac4fb672c42f2452094d8b711f.idx=c1491902849478
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\5f\\fa8e5a76cf56caf6ce8f8026286959d3cbe0f8=c1489399722445
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\nbproject\\package-release.bash=c1488205531828
@@ -31,14 +33,15 @@ c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\0c\\33e3c50cbe62d73abea9e401f71a8244a40e53=c1488729695311
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\a1\\78d29c5104aad98c5eaeb33f1827eb3eb18dee=c1492075254727
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\95\\566e8c28cc00fbdaa53a74672fc8a5ce883fa9=c1489399722351
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\index=c1493308673406
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\index=c1493309992641
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\nbproject\\private\\makefile-variables.mk=c1493286665886
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\nbproject\\project.xml=c1488729054478
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\27\\965c72d043891e3c30a8b02f706f0988731227=c1488209210858
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\nbproject\\makefile-impl.mk=c1490580361406
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\e7\\eef5bdf091c9536d62f24a2799c178d95f686a=c1493309991893
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\nbproject\\makefile-release.mk=c1488205531693
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\88\\739f99b1a602c5bb7ae2c26f10f54bf901bfd6=c1489400729376
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\refs\\remotes\\origin\\master=c1493300604007
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\refs\\remotes\\origin\\master=c1493310010410
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\6b\\399d0a8d4046551b40fca5c51bba5098c632bb=c1493289255747
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\f2\\440c67978055e69261009310c7ed15fd8cf8e7=c1488205729279
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\pack\\pack-d3e66c6f027fc0696905cd16495f76c6cdbf4d7b.idx=c1489400552120
@@ -95,12 +98,13 @@ c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\graph_nodes.txt=c1489719714642
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\4a\\b69df70154b47fbe12e65f220bebb379d94563=c1492075254846
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\pack\\pack-3eec02d90e594173fd4f2dd3218553b22d14a789.idx=c1493286664911
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\refs\\heads\\master=c1493302777092
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\refs\\heads\\master=c1493309992558
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\pack\\pack-d3e66c6f027fc0696905cd16495f76c6cdbf4d7b.pack=c1489400552058
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\33\\2d83618cc11b01351bbd3806f71ae43ab08747=c1488466481869
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\nbproject\\makefile-variables.mk=c1493286665844
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\43\\da63c6659db709e07263ed59dff9467133059e=c1488809674322
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\db\\c89f363bf4e10fcd26244c858268abffe49c1d=c1493289250911
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\06\\24ca9fe1d7e15ce83112f3aab012c5ecf74a65=c1493309975828
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\fetch_head=c1490606178898
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\74\\8a480dd88d7b9b864d42caa6340513454758bb=c1488729695467
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\28\\7ce7d09badf5913d09266cc3d1f5c57040de2d=c1492075254848
@@ -128,7 +132,7 @@ c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\1f\\6419e3f123ced4fd8446f5c9f8d5cafad0a75c=c1488205181676
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\25\\6ea4e0e71a2c842c143826f23ecef1c8c06d57=c1489720940103
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\d9\\d3368348fa747e589f87602f2b6733bf1bb9f1=c1489400273147
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\logs\\head=c1493302777101
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\logs\\head=c1493309992571
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\nbproject\\project.xml=c1493286731453
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\0c\\c6ed303442cd4de5753441ad62d9a1a72a6f32=c1493297117434
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\b7\\d11aaa2969443f7251a3947dac3cb3bc157076=c1490595600284
@@ -138,13 +142,14 @@ c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\8e\\9cd76ee20015e38e39c90d20b63ca297c6a171=c1493289314013
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\cluster.h=c1493304264159
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\small_dataset2.txt=c1493286666106
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\run_aco.h=c1493313982260
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\9e\\7c765e3215e61ba0a43ff7a0748148a45ad42e=c1492075254731
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\run_aco.h=c1493309568993
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\c3\\418411a95ec16cec965d4d73e38edb875f411e=c1493289160037
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\bc\\91e57fcb6f59589accdef28f5901d374868fb1=c1488209210636
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\c3\\418411a95ec16cec965d4d73e38edb875f411e=c1493289160037
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\18\\93931d4aa78118368e37694f67d4f75da0bc24=c1489675777150
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\a0\\bd2d539cbfe5a1e6c226d26ab55f2edb7f7e51=c1493300587026
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\a9\\296ef8f3094f7bec4fb1df5fe887eb0111857d=c1488803902865
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\fe\\1232583e99c15d9a1785c6272306d25a82273d=c1493309991930
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\nbproject\\package-release.bash=c1490580361785
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\logs\\refs\\heads\\master=c1492075254903
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\logs\\refs\\heads\\master=c1490606179793
@@ -167,8 +172,9 @@ c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\cc\\37e9ce6ddf793053083ff30208402e6226ddf0=c1489964384310
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\4e\\f58e09eaede677f004d02adda33bff0887c170=c1488803902785
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\42\\4d55cb3f804181d5a1ab0b4c9b7218827324b0=c1488466481837
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\b8\\3269126df72b7f879d38f68567373dc3929050=c1493309991853
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\d0\\cc0185ca5cdb9551bcadbb5cf5ad2ee4b1538e=c1489963920033
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\logs\\refs\\remotes\\origin\\master=c1493300604027
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\logs\\refs\\remotes\\origin\\master=c1493310010436
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\78\\4db5bb2e731fbd0a1bb9c01646226e9a9e7f45=c1488205728984
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\bc\\ccb839f8467201261b8a9038c15cde0247876a=c1488803902753
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\refs\\remotes\\origin\\master=c1491902853586
@@ -187,6 +193,7 @@ c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\nbproj
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\index=c1490606179606
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\small_dataset1.txt=c1490606286795
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\c2\\548d20c8fed1cb4042fa2794538d558e670573=c1488205181774
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\22\\23f49898fbe0731f7b90f51fb488b40d68069d=c1493309992405
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\9a\\5e1d0c205873caaa60cf2eb8bfa979b352637e=c1493289250877
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\45\\2928830086095b47d0d6796ae2188153bf9bdb=c1489400273288
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\92\\a921e6beadb61886d651da9fbafcc4bd75b0cf=c1488205728941
@@ -197,7 +204,7 @@ c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\nbproj
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\a6\\84e130f27c709901ca1bd23d183084bb3d3853=c1489675777081
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\5d\\511c33dc7e3fda6c4c14c6f2a0078524d10b26=c1488729695440
 c\:\\users\\tony\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\e6\\17e38944500df07a8010eb57b9bb694efad02d=c1492075254712
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\logs\\refs\\heads\\master=c1493302777107
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\logs\\refs\\heads\\master=c1493309992581
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\f4\\91a28d221541d3c39d46b882f5461b97e92fb2=c1488803902224
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\16\\14ed40a1c3b02b6a19eba96a7f694a308c5100=c1493300586992
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\1d\\808af2f39195cf6ebb4e87a7457e02bf1ddeec=c1489675776825
@@ -212,9 +219,9 @@ m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objec
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\6c\\2ae456f7f91599ba3c1b1826cdd8de720ca405=c1493289204759
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\pack\\pack-1738f7eb1c9aaa1ba5a1c10b0af0c78366e3158c.pack=c1490606177429
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\70\\52624779cfa112f371ddbcdb65df814d1345dd=c1488809674392
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\config=c1493300601429
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\config=c1493310007206
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\refs\\remotes\\origin\\master=c1490606178641
-m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\main.cpp=c1493309353113
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\main.cpp=c1493310974235
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\e3\\008dd49f58a7bc0f2b5aa3e0ebc5f1c2ce2f33=c1493297094154
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\nbproject\\makefile-impl.mk=c1493286665803
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\79\\599de195d4f1df5e5ffb3e0e1e0e0b4fe3fab6=c1488205729249
@@ -238,9 +245,12 @@ m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objec
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\a0\\3d6cd0db03aef774eb3e7232414b8d441445e3=c1488205181791
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\4a\\5d251240a811bb324d95dcce44603212c09efd=c1488205182121
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\83\\e750ddae51d29d32375ffeb42203a9f2b3b3ac=c1489675776852
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\5f\\3ae347ab894bb3b7cbd4638977eea5ad007b04=c1493309992501
 m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\de\\85fbc2bc7046c6b7e646d1aeb47ffb78182b95=c1493289250826
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\nbproject\\private\\makefile-variables.mk=c1488205532081
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\1d\\789641d9fa3f1ee81bd9da649d08a735692e2b=c1488205729303
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\da\\e756f07acce66ece724732f7601828f0f13aa8=c1493309992040
+m\:\\documents\\netbeansprojects\\grouped-based-aco-for-solving-tsp\\.git\\objects\\61\\b10c90430e8b1da536d011108f00f780226b24=c1493309992475
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\8a\\8df003b18a48e72d08197c1becd57c81211ab0=c1488803902309
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\83\\81f7ed4f4a401cd9f45d32087eda4b7d0e9661=c1488205181569
 c\:\\users\\tonyc\\onedrive\\documente\\netbeansprojects\\major\ project\\.git\\objects\\8a\\ff2fa2ba260e5856267ecc55e94e2a33162cc7=c1488729695721
