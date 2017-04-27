@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>ant.h</itemPath>
       <itemPath>cluster.h</itemPath>
       <itemPath>node.h</itemPath>
       <itemPath>nodes.h</itemPath>
@@ -30,6 +31,7 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>newfile</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -41,9 +43,13 @@
       </toolsSet>
       <compileType>
       </compileType>
+      <item path="ant.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="cluster.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="newfile" ex="false" tool="3" flavor2="0">
       </item>
       <item path="node.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -74,9 +80,13 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="ant.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="cluster.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="newfile" ex="false" tool="3" flavor2="0">
       </item>
       <item path="node.h" ex="false" tool="3" flavor2="0">
       </item>
