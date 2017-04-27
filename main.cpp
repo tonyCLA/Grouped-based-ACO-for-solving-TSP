@@ -10,14 +10,14 @@
  *
  * Created on 27 februarie 2017, 14:25
  */
-
+#include <vector>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include <vector>
 #include <limits>
 #include "node.h"
+#include "cluster.h"
 
 using namespace std;
 
@@ -91,7 +91,7 @@ void display_nodes(vector<Nodes> nodel, int nr_nodes)
     cout<<"Number of nodes is "<<nr_nodes<<endl;
     for(int i=1; i<=nr_nodes;i++)
     {
-        cout<<nodel[i].c<<" ("<<nodel[i].x<<", "<<nodel[i].y<<")\n";
+        cout<<"id: "<<nodel[i].id<<", c: "<<nodel[i].c<<"; coord: ("<<nodel[i].x<<", "<<nodel[i].y<<")\n";
     }
 }
 
@@ -515,9 +515,25 @@ vector<int> construct_final_solution(vector<int> ps, int nr_elem, vector<Nodes> 
     return final_sol;
 }
 
-void two_opt(vector<Nodes> nodel, int nr_nodes, vector<int> partial_sol, int nr_clusters, vector<int> &final_sol)
+//further optimize the local tours of each cluster
+void two_opt(vector<Nodes> nodel, int nr_nodes, vector<int> partial_sol, int nr_clusters, vector<int> &final_sol, vector<Clusters> clusterl)
 {
-    
+    float min_dist=std::numeric_limits<float>::max();; //shortest road length
+    bool check=true; // boolean value which will be update after each 2opt iteration
+                     // it will turn to false if the are aren't any other solutions
+    int s_pos,e_pos,cluster=nodel[final_sol[1]].c, i,j; /* local tour starting (s_pos) and ending position(e_pos) */
+            
+    while(check)
+    {
+        for(i=2;i<nr_nodes;i++)
+        {
+            if(nodel[i].c == cluster)
+                for(j=i+2;;j++)
+                {
+                    
+                }
+        }
+    }
 }
 
 float calculate_length(vector<int> solution, vector<Nodes> all_nodes, int nr_nodes)
@@ -597,6 +613,12 @@ int main(int argc, char** argv) {
     
     cout<<endl<<s;
      */
+    
+    vector<Nodes>::const_iterator first = nodes.begin() + 10;
+    vector<Nodes>::const_iterator last = nodes.begin() + 16;
+    vector<Nodes> newVec(first, last);
+    
+    display_nodes(newVec, 5);
     
     node n1,n2;
     n1.set_coord(3,4);
