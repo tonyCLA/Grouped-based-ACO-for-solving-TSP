@@ -7,7 +7,6 @@
       <itemPath>ant.h</itemPath>
       <itemPath>cluster.h</itemPath>
       <itemPath>node.h</itemPath>
-      <itemPath>nodes.h</itemPath>
       <itemPath>run_aco.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -32,6 +31,9 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <itemPath>dataset1.txt</itemPath>
+    <itemPath>dataset2.txt</itemPath>
+    <itemPath>dataset3.txt</itemPath>
     <itemPath>newfile</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
@@ -48,13 +50,17 @@
       </item>
       <item path="cluster.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dataset1.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dataset2.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dataset3.txt" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="newfile" ex="false" tool="3" flavor2="0">
       </item>
       <item path="node.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="nodes.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="run_aco.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -87,13 +93,17 @@
       </item>
       <item path="cluster.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dataset1.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dataset2.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dataset3.txt" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="newfile" ex="false" tool="3" flavor2="0">
       </item>
       <item path="node.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="nodes.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="run_aco.h" ex="false" tool="3" flavor2="0">
       </item>

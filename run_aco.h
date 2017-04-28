@@ -11,6 +11,11 @@
  * Created on 27 April 2017, 16:57
  */
 
+/*
+ * this class acts as a manager
+ * it performs the most important steps
+ */
+
 #ifndef RUN_ACO_H
 #define RUN_ACO_H
 
@@ -24,7 +29,7 @@ class run_aco
     iterations, 
     nr_ants,
     nr_clusters;
-
+    std::string dataset;
     float threshold;
     
     std::vector<int> partial_solution, final_solution;
@@ -36,6 +41,10 @@ class run_aco
     std::vector<node> nodes;
     std::vector<cluster> clusters;
 public:
+    void set_ants(int nr);
+    void set_iterations(int nr);
+    void set_threshold(float nr);
+    void set_dataset(std::string filename);
     void set_nodes();
     void initialize_data();
     void display_nodes();
@@ -58,17 +67,38 @@ public:
     void construct_final_solution(int nr_elem);
     void two_opt();
     float calculate_length();
+    std::vector<int> generate_final_solution();
 };
+
+void run_aco::set_ants(int nr)
+{
+    nr_ants=nr;
+}
+
+void run_aco::set_iterations(int nr)
+{
+    iterations=nr;
+}
+
+void run_aco::set_threshold(float nr)
+{
+    threshold=nr;
+}
+
+void run_aco::set_dataset(std::string filename)
+{
+    dataset=filename;
+}
 
 void run_aco::set_nodes()
 {
-    std::fstream nodes_file("small_dataset1.txt", std::ios_base::in); //D:
+    std::fstream nodes_file(dataset.c_str(), std::ios_base::in); //D:
     cout<<">> Reading the file with coordinates:\n";
     float a,b,c;
     nr_nodes=1;
     
     cout<<"\nGetting nodes coordinates from file!\n";
-    while (nodes_file /*>> c*/ >> a >> b)
+    while (nodes_file >> c >> a >> b)
     {
         nodes.resize(nr_nodes+1);
         nodes[nr_nodes].setid(nr_nodes);
@@ -415,6 +445,7 @@ void run_aco::update_partial_solution()
 
 void run_aco::start_aco()
 {
+    cout<<"\n>> Run ACO:\n ";
     int x,y,tmp,nr_of_avnodes=0;
     psol_length=std::numeric_limits<float>::max();
     std::vector<float> probabilities;
@@ -530,6 +561,32 @@ float run_aco::calculate_length()
     for(int i=2;i<=nr_nodes+1;i++)
             total+=nodes[final_solution[i]].calc_dist(nodes[final_solution[i-1]]);
     return total;
+}
+
+std::vector<int> run_aco::generate_final_solution()
+{
+    cout<<"\n    Starting Program\n";
+    set_nodes();
+    initialize_data();
+    display_nodes();
+    cluster_nodes();
+    set_clusters();
+    display_clusters();
+    set_pheromone();
+    start_aco(); 
+    cout<<"\n\n Partial solution (made of clusters) found with given parameters is ("<<psol_length<<"):";
+    for(int i=1;i<=nr_clusters+1;i++)
+        cout<<nodes[partial_solution[i]].get_c()<<"("<<partial_solution[i]<<")"<<"->";
+    final_solution.resize(nr_nodes+1);
+    construct_final_solution(nr_clusters+1);
+    
+    cout<<"\nTotal length: "<<calculate_length()<<endl;
+    cout<<"Final Solution: ";
+    for(int i=1;i<=nr_nodes;i++)
+        cout<<final_solution[i]<<"->";
+    cout<<final_solution[nr_nodes+1]<<endl;
+    
+    return final_solution;
 }
 
 #endif /* RUN_ACO_H */
