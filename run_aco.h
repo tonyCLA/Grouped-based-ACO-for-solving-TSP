@@ -29,8 +29,9 @@ class run_aco
     iterations, 
     nr_ants,
     nr_clusters;
-    std::string dataset;
     float threshold;
+    
+    std::string dataset, logfile;
     
     std::vector<int> partial_solution, final_solution;
     float psol_length, fsol_length;
@@ -45,6 +46,7 @@ public:
     void set_iterations(int nr);
     void set_threshold(float nr);
     void set_dataset(std::string filename);
+    void set_logfile(std::string filename);
     void set_nodes();
     void initialize_data();
     void display_nodes();
@@ -88,6 +90,11 @@ void run_aco::set_threshold(float nr)
 void run_aco::set_dataset(std::string filename)
 {
     dataset=filename;
+}
+
+void run_aco::set_logfile(std::string filename)
+{
+    logfile=filename;
 }
 
 void run_aco::set_nodes()
@@ -585,7 +592,6 @@ std::vector<int> run_aco::generate_final_solution()
     for(int i=1;i<=nr_nodes;i++)
         cout<<final_solution[i]<<"->";
     cout<<final_solution[nr_nodes+1]<<endl;
-    
     return final_solution;
 }
 

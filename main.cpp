@@ -24,14 +24,10 @@
 
 using namespace std;
 
-/*
- * 
- */
-
 int main(int argc, char** argv) 
 {
     int nr_ants, iterations;
-    string dataset="dataset3.txt";
+    string dataset="small_dataset1.txt";
     
     cout<<"Please enter number of iterations: ";
     //cin>>iterations;
@@ -47,13 +43,13 @@ int main(int argc, char** argv)
     cout<<"> Nr. ants: "<< nr_ants<<endl;
     cout<<"> Dataset file: "<< dataset<<endl;
     
-    //cout<<""
     run_aco session1;
     session1.set_dataset(dataset);
+    //session1.set_logfile("output.log");
     session1.set_ants(10);
     session1.set_iterations(10);
-    session1.set_threshold(100.5);
+    session1.set_threshold(2.5);
     session1.generate_final_solution();
-    
+
     return 0;
 }
