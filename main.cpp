@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     session1.set_dataset(dataset);
     //session1.set_logfile("output.log");
     session1.set_ants(10);
-    session1.set_iterations(50);
+    session1.set_iterations(100);
     session1.set_threshold(50);
     session1.generate_final_solution();
   

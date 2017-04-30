@@ -266,7 +266,8 @@ void run_aco::locate_ants()
         for(int j=1;j<=nr_nodes;j++)
             if( nodes[j].get_c() == nodes[rand_pos].get_c() )
                 ants[i].visited[j]=true;
-        }
+    }
+    srand (1);
 }
 
 void run_aco::display_ant_status()
@@ -366,20 +367,20 @@ void run_aco::set_probabilities( std::vector<float> &prob, std::vector<int> av_n
     
     for(j=1;j<=nr_av_nodes/2;j++)
     {
-        sum+=pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 4  )  *  pow(pheromone[av_nodes[j*2]][av_nodes[j*2-1]],2);
+        sum+=pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 6  )  *  pow(pheromone[av_nodes[j*2]][av_nodes[j*2-1]],2);
 
     }
     
     for(i=1;i<=nr_av_nodes/2;i++)
     {
-        prob[i]= pow( 1/nodes[av_nodes[i*2]].calc_dist(nodes[av_nodes[i*2-1]]), 4   )  *  pow(pheromone[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
+        prob[i]= pow( 1/nodes[av_nodes[i*2]].calc_dist(nodes[av_nodes[i*2-1]]), 6   )  *  pow(pheromone[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
     }
 }
 
 int run_aco::roulette_selection(std::vector<float> prob, int nr_av_nodes)
 {
     int i;
-    //srand (time(NULL));
+    srand (time(NULL));
     float sum=0,rand_n;
     for(int i=1;i<=nr_av_nodes;i++)
         sum+=prob[i];
@@ -392,7 +393,7 @@ int run_aco::roulette_selection(std::vector<float> prob, int nr_av_nodes)
             return i;
         sum+=prob[i];
     }
-    
+    srand (1);
     return 0;
 }
 
@@ -641,7 +642,7 @@ std::vector<int> run_aco::generate_final_solution()
     set_nodes();
     initialize_data();
     display_nodes();
-    cluster_nodes();
+    //cluster_nodes();
     set_clusters();
     display_clusters();
     set_pheromone();
