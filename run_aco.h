@@ -21,6 +21,9 @@
 
 #include <vector>
 
+#include "node.h"
+#include "cluster.h"
+
 
 using std::cout;
 using std::endl;
@@ -33,6 +36,7 @@ class run_aco
     nr_ants,
     nr_clusters;
     float threshold;
+    int priority_distance, priority_pheromone;
     
     std::string dataset, logfile;
     
@@ -152,6 +156,14 @@ void run_aco::display_nodes()
     }
 }
 
+/*
+ * Method 1 
+ *  Clustering comparing euclidean distance between 2 nodes
+ *  If the distance is below a certain threshold the node 
+ * of position j become part of same cluster as i
+ * This method works well for small graph where the user has 
+ * a rough idea of the distance between nodes
+ */
 void run_aco::cluster_nodes()
 {
     cout<<"\n>> Clustering nodes.\n";
@@ -242,6 +254,7 @@ void run_aco::display_pheromone()
 
 void run_aco::locate_ants()
 {
+    srand (time(NULL));
     cout<<">>> Positioning ants\n";
     for (int i=1; i<=nr_ants; i++)
     {   
@@ -353,19 +366,20 @@ void run_aco::set_probabilities( std::vector<float> &prob, std::vector<int> av_n
     
     for(j=1;j<=nr_av_nodes/2;j++)
     {
-        sum+=pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 2  )  *  pow(pheromone[av_nodes[j*2]][av_nodes[j*2-1]],2);
+        sum+=pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 4  )  *  pow(pheromone[av_nodes[j*2]][av_nodes[j*2-1]],2);
 
     }
     
     for(i=1;i<=nr_av_nodes/2;i++)
     {
-        prob[i]= pow( 1/nodes[av_nodes[i*2]].calc_dist(nodes[av_nodes[i*2-1]]), 2  )  *  pow(pheromone[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
+        prob[i]= pow( 1/nodes[av_nodes[i*2]].calc_dist(nodes[av_nodes[i*2-1]]), 4   )  *  pow(pheromone[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
     }
 }
 
 int run_aco::roulette_selection(std::vector<float> prob, int nr_av_nodes)
 {
     int i;
+    //srand (time(NULL));
     float sum=0,rand_n;
     for(int i=1;i<=nr_av_nodes;i++)
         sum+=prob[i];
@@ -583,6 +597,36 @@ std::vector<int> run_aco::two_opt_local(std::vector<int> sample, int sample_size
     return sample;
 }
 
+void vector_append(std::vector<int> &v1, int v1_size, std::vector<int> v2, int v2_size)
+{   
+    v1.resize(v1_size+v2_size+1);
+    for(int i=1;i<v2_size;i++)
+        v1[v1_size+i]=v2[i];
+}
+
+void run_aco::two_opt_finalsolution()
+{
+    int i,tour_s, position=0;
+    std::vector<int> copy;
+    
+    for(i=1;i<partial_solution.size()-1;i++)
+    {
+        tour_s=clusters[nodes[partial_solution[i]].get_c()].get_nr_nodes()+1;
+        std::vector<int>::const_iterator limit1 = final_solution.begin()+ position;
+        std::vector<int>::const_iterator limit2 = final_solution.begin() + position + tour_s + 1;
+        std::vector<int> sub_vec(limit1, limit2);
+        if(tour_s>=4)
+        {
+            sub_vec=two_opt_local(sub_vec,tour_s);
+        }
+        vector_append(copy,position,sub_vec,tour_s);
+        position+=tour_s-1;
+        
+    }
+    copy[copy.size()-1]=copy[1];
+    final_solution=copy;
+}
+
 float run_aco::calculate_length(std::vector<int> tour, int tour_size)
 {
     float total=0;
@@ -591,25 +635,13 @@ float run_aco::calculate_length(std::vector<int> tour, int tour_size)
     return total;
 }
 
-void run_aco::two_opt_finalsolution()
-{
-    int i,tour_s;
-    std::vector<int> copy;
-    
-    for(i=1;i<=nr_clusters;i++)
-    {
-        
-    }
-    
-}
-
 std::vector<int> run_aco::generate_final_solution()
 {
     cout<<"\n    Starting Program\n";
     set_nodes();
     initialize_data();
     display_nodes();
-    //cluster_nodes();
+    cluster_nodes();
     set_clusters();
     display_clusters();
     set_pheromone();
@@ -626,6 +658,15 @@ std::vector<int> run_aco::generate_final_solution()
     for(int i=1;i<=nr_nodes;i++)
         cout<<final_solution[i]<<"->";
     cout<<final_solution[nr_nodes+1]<<endl;
+    
+    two_opt_finalsolution();
+    
+    cout<<"Total length after 2 opt optimizations : "<<calculate_length(final_solution, nr_nodes+1)<<endl;
+    cout<<"Final Solution: ";
+    for(int i=1;i<=nr_nodes;i++)
+        cout<<final_solution[i]<<"->";
+    cout<<final_solution[nr_nodes+1]<<endl;
+    
     return final_solution;
 }
 

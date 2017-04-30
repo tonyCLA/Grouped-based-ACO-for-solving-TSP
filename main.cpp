@@ -17,6 +17,7 @@
 #include <cmath>
 #include <limits>
 #include <string>
+#include <time.h> 
 #include "node.h"
 #include "cluster.h"
 #include "ant.h"
@@ -46,10 +47,10 @@ int main(int argc, char** argv)
     run_aco session1;
     session1.set_dataset(dataset);
     //session1.set_logfile("output.log");
-    session1.set_ants(100);
-    session1.set_iterations(1500);
-    session1.set_threshold(2.5);
+    session1.set_ants(10);
+    session1.set_iterations(50);
+    session1.set_threshold(50);
     session1.generate_final_solution();
-
+  
     return 0;
 }
