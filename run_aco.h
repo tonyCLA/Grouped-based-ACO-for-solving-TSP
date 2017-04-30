@@ -646,22 +646,16 @@ std::vector<int> run_aco::generate_final_solution()
     display_clusters();
     set_pheromone();
     start_aco(); 
-    cout<<"\n\n Partial solution, made of clusters, found with given parameters is ("<<psol_length<<"):";
-    for(int i=1;i<nr_clusters+1;i++)
-        cout<<nodes[partial_solution[i]].get_c()<<"->";
-    cout<<nodes[partial_solution[nr_clusters+1]].get_c()<<endl;
+    //cout<<"\n\n Partial solution, made of clusters, found with given parameters is ("<<psol_length<<"):";
+    //for(int i=1;i<nr_clusters+1;i++)
+    //   cout<<nodes[partial_solution[i]].get_c()<<"->";
+    //cout<<nodes[partial_solution[nr_clusters+1]].get_c()<<endl;
+    
     final_solution.resize(nr_nodes+1);
     construct_final_solution(nr_clusters+1);
-    
-    cout<<"Total length: "<<calculate_length(final_solution, nr_nodes+1)<<endl;
-    cout<<"Final Solution: ";
-    for(int i=1;i<=nr_nodes;i++)
-        cout<<final_solution[i]<<"->";
-    cout<<final_solution[nr_nodes+1]<<endl;
-    
     two_opt_finalsolution();
     
-    cout<<"Total length after 2 opt optimizations : "<<calculate_length(final_solution, nr_nodes+1)<<endl;
+    cout<<"Total length : "<<calculate_length(final_solution, nr_nodes+1)<<endl;
     cout<<"Final Solution: ";
     for(int i=1;i<=nr_nodes;i++)
         cout<<final_solution[i]<<"->";
