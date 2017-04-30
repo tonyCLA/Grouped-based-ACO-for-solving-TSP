@@ -19,6 +19,9 @@
 #ifndef RUN_ACO_H
 #define RUN_ACO_H
 
+#include <vector>
+
+
 using std::cout;
 using std::endl;
 using std::cin;
@@ -67,8 +70,9 @@ public:
     void update_partial_solution();
     void start_aco();
     void construct_final_solution(int nr_elem);
-    void two_opt();
-    float calculate_length();
+    std::vector<int> two_opt_local(std::vector<int> sample, int sample_size);
+    void two_opt_finalsolution();
+    float calculate_length(std::vector<int> tour, int tour_size);
     std::vector<int> generate_final_solution();
 };
 
@@ -103,8 +107,6 @@ void run_aco::set_nodes()
     cout<<">> Reading the file with coordinates:\n";
     float a,b,c;
     nr_nodes=1;
-    
-    cout<<"\nGetting nodes coordinates from file!\n";
     while (nodes_file >> c >> a >> b)
     {
         nodes.resize(nr_nodes+1);
@@ -541,33 +543,64 @@ void run_aco::construct_final_solution(int nr_elem)
     final_solution[pos]=final_solution[1];
 }
 
-//further optimization of the local tours of each cluster
-void run_aco::two_opt()
+void swap_val(int &x, int &y)
 {
-    float min_dist=std::numeric_limits<float>::max();; //shortest road length
-    bool check=true; // boolean value which will be update after each 2opt iteration
-                     // it will turn to false if the are aren't any other solutions
-    int s_pos,e_pos,cluster=nodes[final_solution[1]].get_c(), i,j; /* local tour starting (s_pos) and ending position(e_pos) */
-            
-    while(check)
-    {
-        for(i=2;i<nr_nodes;i++)
-        {
-            if(nodes[i].get_c() == cluster)
-                for(j=i+2;;j++)
-                {
-                    
-                }
-        }
-    }
+    int placeholder;
+    placeholder=x;
+    x=y;
+    y=placeholder;
 }
 
-float run_aco::calculate_length()
+//further optimize the local tour, params : local tour and size of local tour
+std::vector<int> run_aco::two_opt_local(std::vector<int> sample, int sample_size)
+{
+    float min_length=calculate_length(sample,sample_size); //shortest road length
+    bool check=true;      
+    std::vector<int> copy;
+    copy.resize(sample_size+1);
+    int i,j,placeholder;
+    copy=sample;
+    while(check)
+    {
+        check=false;
+        for(i=2;i<=sample_size-2 && !check;i++)
+        {
+            for(j=i+1;j<=sample_size-1 && !check;j++)
+            {
+                
+                swap_val(copy[i],copy[j]);
+                if(calculate_length(copy,sample_size)< min_length)
+                {
+                    check=true;
+                    min_length=calculate_length(copy,sample_size);
+                    sample=copy;
+                }
+                
+                copy=sample;
+            }
+        }
+    }
+    return sample;
+}
+
+float run_aco::calculate_length(std::vector<int> tour, int tour_size)
 {
     float total=0;
-    for(int i=2;i<=nr_nodes+1;i++)
-            total+=nodes[final_solution[i]].calc_dist(nodes[final_solution[i-1]]);
+    for(int i=2;i<=tour_size;i++)
+            total+=nodes[tour[i]].calc_dist(nodes[tour[i-1]]);
     return total;
+}
+
+void run_aco::two_opt_finalsolution()
+{
+    int i,tour_s;
+    std::vector<int> copy;
+    
+    for(i=1;i<=nr_clusters;i++)
+    {
+        
+    }
+    
 }
 
 std::vector<int> run_aco::generate_final_solution()
@@ -576,18 +609,19 @@ std::vector<int> run_aco::generate_final_solution()
     set_nodes();
     initialize_data();
     display_nodes();
-    cluster_nodes();
+    //cluster_nodes();
     set_clusters();
     display_clusters();
     set_pheromone();
     start_aco(); 
-    cout<<"\n\n Partial solution (made of clusters) found with given parameters is ("<<psol_length<<"):";
-    for(int i=1;i<=nr_clusters+1;i++)
-        cout<<nodes[partial_solution[i]].get_c()<<"("<<partial_solution[i]<<")"<<"->";
+    cout<<"\n\n Partial solution, made of clusters, found with given parameters is ("<<psol_length<<"):";
+    for(int i=1;i<nr_clusters+1;i++)
+        cout<<nodes[partial_solution[i]].get_c()<<"->";
+    cout<<nodes[partial_solution[nr_clusters+1]].get_c()<<endl;
     final_solution.resize(nr_nodes+1);
     construct_final_solution(nr_clusters+1);
     
-    cout<<"\nTotal length: "<<calculate_length()<<endl;
+    cout<<"Total length: "<<calculate_length(final_solution, nr_nodes+1)<<endl;
     cout<<"Final Solution: ";
     for(int i=1;i<=nr_nodes;i++)
         cout<<final_solution[i]<<"->";
