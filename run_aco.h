@@ -23,6 +23,7 @@
 
 #include "node.h"
 #include "cluster.h"
+#include "ant.h"
 
 
 using std::cout;
@@ -43,7 +44,7 @@ class run_aco
     std::vector<int> partial_solution, final_solution;
     float psol_length, fsol_length;
     
-    std::vector<std::vector<float> > pheromone;
+    std::vector<std::vector<float> > pheromone_table;
 
     std::vector<ant> ants;
     std::vector<node> nodes;
@@ -57,10 +58,10 @@ public:
     void set_nodes();
     void initialize_data();
     void display_nodes();
-    void cluster_nodes();
+    void cluster_nodes_method1();
     void set_clusters();
     void display_clusters();
-    void set_pheromone();
+    void set_pheromone(float initial_pher_levels);
     void display_pheromone();
     void locate_ants();
     void display_ant_status();
@@ -70,14 +71,14 @@ public:
     void set_probabilities(std::vector<float> &prob, std::vector<int> av_nodes, int nr_av_nodes);
     int roulette_selection(std::vector<float> prob, int nr_av_nodes);
     void move_ant(ant &antl, int exit_node, int new_node );
-    void update_pheromone();
+    void update_pheromone(float evaporation, int ant_id);
     void update_partial_solution();
-    void start_aco();
+    void start_aco(float evaporation);
     void construct_final_solution(int nr_elem);
     std::vector<int> two_opt_local(std::vector<int> sample, int sample_size);
-    void two_opt_finalsolution();
+    void two_opt();
     float calculate_length(std::vector<int> tour, int tour_size);
-    std::vector<int> generate_final_solution();
+    std::vector<int> generate_final_solution(int mode);
 };
 
 void run_aco::set_ants(int nr)
@@ -126,13 +127,7 @@ void run_aco::initialize_data()
 {
     cout<<">> Set variables boundaries:\n";
     int i,j;
-    pheromone.resize(nr_nodes+1);
-    partial_solution.resize(nr_nodes+1);
-    
-    //initialize pheromone matrix
-    for(i=1;i<=nr_nodes;i++)
-        pheromone[i].resize(nr_nodes+1);
-    
+    partial_solution.resize(nr_nodes+1);   
     //initialize ant variables
     ants.resize(nr_ants+1);
     for(i=1;i<=nr_ants;i++)
@@ -164,21 +159,38 @@ void run_aco::display_nodes()
  * This method works well for small graph where the user has 
  * a rough idea of the distance between nodes
  */
-void run_aco::cluster_nodes()
+
+void run_aco::cluster_nodes_method1()
 {
     cout<<"\n>> Clustering nodes.\n";
-    int cluster_nr=1;
-    for(int i=1;i<=nr_nodes;i++)
+    float dist=std::numeric_limits<float>::max(),
+            min_dist=std::numeric_limits<float>::max();
+    int c1, c2;
+    bool step=false;
+    nr_clusters=0;
+    while(!step)
+    {
+        step=true;
+        for(int i=1;i<=nr_nodes && step;i++)
         {
-            cluster_nr=nodes[i].get_c();
-            
-            for (int j=i+1; j<=nr_nodes; j++)
-                //the code under sqrt function is basically euclidian distance between 2 points
-                if ( nodes[i].calc_dist(nodes[j]) < threshold )
+            c1=nodes[i].get_c();
+            for(int j=1;j<=nr_nodes;j++)
+            {
+                dist=nodes[i].calc_dist(nodes[j]);
+                if(i!=j && nodes[i].get_c()!=nodes[j].get_c() && dist < threshold && dist<min_dist)
                 {
-                    nodes[j].set_cluster(cluster_nr);
-                }                            
-            }                                
+                    c2=nodes[j].get_c();
+                    dist=min_dist;
+                    step=false;
+                }
+            }
+            for(int j=1;j<=nr_nodes;j++)
+                if(nodes[j].get_c() == c2)
+                {
+                    nodes[j].set_cluster(c1);
+                }
+        }
+    }
 }
 
 void run_aco::set_clusters()
@@ -233,13 +245,20 @@ void run_aco::display_clusters()
     cout<<endl;
 }
 
-void run_aco::set_pheromone()
+void run_aco::set_pheromone(float initial_pher_levels)
 {
+    
+     pheromone_table.resize(nr_clusters+1);
+    //initialize pheromone matrix
+     
+    for(int i=1;i<=nr_clusters;i++)
+        pheromone_table[i].resize(nr_clusters+1);
+     
     cout<<"\n>> Set pheromone levels.\n";
-    for (int a=1 ; a<=nr_nodes; a++)
-        for (int b=1; b<=nr_nodes; b++)
+    for (int a=1 ; a<=nr_clusters; a++)
+        for (int b=1; b<=nr_clusters; b++)
             if (a!=b)
-                pheromone[a][b]=0.5;
+                pheromone_table[a][b]=initial_pher_levels;
 }
 
 void run_aco::display_pheromone()
@@ -248,13 +267,13 @@ void run_aco::display_pheromone()
     for(i=1;i<=nr_nodes;i++,cout<<endl)
         for(j=1;j<=nr_nodes;j++)
         {
-            cout<<pheromone[i][j]<<" ";
+            cout<<pheromone_table[i][j]<<" ";
         }
 }
 
 void run_aco::locate_ants()
 {
-    srand (time(NULL));
+    //srand (time(NULL));
     cout<<">>> Positioning ants\n";
     for (int i=1; i<=nr_ants; i++)
     {   
@@ -267,7 +286,6 @@ void run_aco::locate_ants()
             if( nodes[j].get_c() == nodes[rand_pos].get_c() )
                 ants[i].visited[j]=true;
     }
-    srand (1);
 }
 
 void run_aco::display_ant_status()
@@ -361,26 +379,29 @@ void run_aco::get_possible_routes(std::vector<int> &av_nodes, int &nr_av_nodes, 
 
 void run_aco::set_probabilities( std::vector<float> &prob, std::vector<int> av_nodes, int nr_av_nodes)
 {
-    int i,j;
-    float sum;
+    int j,c1,c2;
+    float sum=0;
     prob.resize(nr_av_nodes/2+1);
+
+    for(j=1;j<=nr_av_nodes/2;j++)
+    {
+        c1=nodes[av_nodes[j*2]].get_c();
+        c2=nodes[av_nodes[j*2-1]].get_c();
+        sum+=pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 2  )  *  pow(pheromone_table[c1][c2],2);
+    }
     
     for(j=1;j<=nr_av_nodes/2;j++)
     {
-        sum+=pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 6  )  *  pow(pheromone[av_nodes[j*2]][av_nodes[j*2-1]],2);
+        c1=nodes[av_nodes[j*2]].get_c();
+        c2=nodes[av_nodes[j*2-1]].get_c();
+        prob[j]=(pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 2  )  *  pow(pheromone_table[c1][c2],2))/sum;
 
-    }
-    
-    for(i=1;i<=nr_av_nodes/2;i++)
-    {
-        prob[i]= pow( 1/nodes[av_nodes[i*2]].calc_dist(nodes[av_nodes[i*2-1]]), 6   )  *  pow(pheromone[av_nodes[i*2]][av_nodes[i*2-1]],2)/sum;
     }
 }
 
 int run_aco::roulette_selection(std::vector<float> prob, int nr_av_nodes)
 {
     int i;
-    srand (time(NULL));
     float sum=0,rand_n;
     for(int i=1;i<=nr_av_nodes;i++)
         sum+=prob[i];
@@ -393,7 +414,6 @@ int run_aco::roulette_selection(std::vector<float> prob, int nr_av_nodes)
             return i;
         sum+=prob[i];
     }
-    srand (1);
     return 0;
 }
 
@@ -416,35 +436,26 @@ void run_aco::move_ant(ant &antl, int exit_node, int new_node )
     }
 }
 
-void run_aco::update_pheromone()
+void run_aco::update_pheromone(float evaporation,int ant_id)
 {
-    int i,j,k;
+    int j,k;
     node n1,n2,copy;
-    float dist, evaporation=0.1;
+
     cout<<">> Update pheromone.\n";
-    for(i=1;i<=nr_ants;i++)
-        for(j=1;j<ants[i].get_sol_nr();j++)
-        {
-            n1=nodes[ants[i].solution[j]];
-            n2=nodes[ants[i].solution[j+1]];
-            //cout<<n1.id<<"->"<<n2.id<<endl;
-            dist=std::numeric_limits<float>::max();
-            for(k=1;k<=nr_nodes;k++)
-            {
-                if( nodes[k].calc_dist(n2) < dist && n1.get_c() != n2.get_c() && n1.get_c() == nodes[k].get_c())
-                {
-                    dist=nodes[k].calc_dist(n2);
-                    copy=nodes[k];
-                }
-            }
-            pheromone[copy.get_id()][n2.get_id()]+=1/dist;
-            pheromone[n2.get_id()][copy.get_id()]+=1/dist;
-        }
-        //pheromone evaporation
-       for(i=1;i<=nr_nodes;i++)
-           for(j=1;j<=nr_nodes;j++)
-               if(pheromone[i][j]-evaporation>=0)
-                   pheromone[i][j]-=evaporation;
+    for(j=1;j<ants[ant_id].get_sol_nr();j++)
+    {
+        n1=nodes[ants[ant_id].solution[j]];
+        n2=nodes[ants[ant_id].solution[j+1]];
+        pheromone_table[n1.get_c()][n2.get_c()]+=1/n1.calc_dist(n2);
+        pheromone_table[n2.get_c()][n1.get_c()]+=1/n1.calc_dist(n2);
+    }
+    
+    //pheromone evaporation
+   for(k=1;k<=nr_clusters;k++)
+       for(j=1;j<=nr_clusters;j++)
+           if(pheromone_table[k][j]-evaporation>=0)
+               pheromone_table[k][j]-=evaporation;
+           else pheromone_table[k][j]=0.001;
 }
 
 void run_aco::update_partial_solution()
@@ -467,11 +478,12 @@ void run_aco::update_partial_solution()
         }
 }
 
-void run_aco::start_aco()
+void run_aco::start_aco(float evaporation)
 {
     cout<<"\n>> Run ACO:\n ";
-    int x,y,tmp,nr_of_avnodes=0;
+    int x,y,tmp,nr_of_avnodes=0, ant_id;
     psol_length=std::numeric_limits<float>::max();
+    float best_length=std::numeric_limits<float>::max();
     std::vector<float> probabilities;
     std::vector<int> available_nodes;
     
@@ -488,9 +500,13 @@ void run_aco::start_aco()
                 //picking up the minimum distances between ant current cluster and other clusters
                 get_possible_routes(available_nodes,nr_of_avnodes, ants[j]);      
                 set_probabilities(probabilities,available_nodes,nr_of_avnodes);
+                //cout<<"> Ant located on "<<ants[j].get_postion().get_id()<<" has the following options (routes)"<<nr_of_avnodes/2<<endl;
+                //for(int k=1;k<=nr_of_avnodes;k+=2)
+                //   cout<<probabilities[k/2+1]<<" | "<<available_nodes[k]<<"->"<<available_nodes[k+1]<<endl;
                 if(nr_of_avnodes>2)
                     tmp=roulette_selection(probabilities,nr_of_avnodes/2)*2;
                 else tmp=2;
+                //cout<<"\n next node is: "<<available_nodes[tmp];
                 move_ant(ants[j],available_nodes[tmp-1],available_nodes[tmp]);
             } 
             //move ant to initial cluster
@@ -501,12 +517,17 @@ void run_aco::start_aco()
         update_partial_solution();
         for(y=1;y<=nr_ants;y++)
         {
+            if(ants[y].get_road_length() < best_length)
+            {
+                psol_length;
+                ant_id=ants[y].get_id();
+            }
             cout<<"Ant "<<y<< " final solution ("<<ants[y].get_road_length()<<"): ";
             for(x=1;x<ants[y].get_sol_nr();x++)
                 cout<<ants[y].solution[x]<<" -> ";
             cout<<ants[y].solution[ants[y].get_sol_nr()]<<endl;
         }
-        update_pheromone(); 
+        update_pheromone(evaporation,ant_id); 
     }//end of iterations loop
 }
 
@@ -605,7 +626,7 @@ void vector_append(std::vector<int> &v1, int v1_size, std::vector<int> v2, int v
         v1[v1_size+i]=v2[i];
 }
 
-void run_aco::two_opt_finalsolution()
+void run_aco::two_opt()
 {
     int i,tour_s, position=0;
     std::vector<int> copy;
@@ -636,17 +657,18 @@ float run_aco::calculate_length(std::vector<int> tour, int tour_size)
     return total;
 }
 
-std::vector<int> run_aco::generate_final_solution()
+std::vector<int> run_aco::generate_final_solution(int mode)
 {
     cout<<"\n    Starting Program\n";
     set_nodes();
     initialize_data();
     display_nodes();
-    //cluster_nodes();
+    if(mode==1)
+        cluster_nodes_method1();
     set_clusters();
     display_clusters();
-    set_pheromone();
-    start_aco(); 
+    set_pheromone(0.5);
+    start_aco(0.1); 
     //cout<<"\n\n Partial solution, made of clusters, found with given parameters is ("<<psol_length<<"):";
     //for(int i=1;i<nr_clusters+1;i++)
     //   cout<<nodes[partial_solution[i]].get_c()<<"->";
@@ -654,8 +676,10 @@ std::vector<int> run_aco::generate_final_solution()
     
     final_solution.resize(nr_nodes+1);
     construct_final_solution(nr_clusters+1);
-    two_opt_finalsolution();
+    two_opt();
     
+    
+    cout<<nodes[24].calc_dist(nodes[16]);
     cout<<"Total length : "<<calculate_length(final_solution, nr_nodes+1)<<endl;
     cout<<"Final Solution: ";
     for(int i=1;i<=nr_nodes;i++)

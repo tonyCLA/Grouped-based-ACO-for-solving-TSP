@@ -28,7 +28,7 @@ using namespace std;
 int main(int argc, char** argv) 
 {
     int nr_ants, iterations;
-    string dataset="dataset3.txt";
+    string dataset="small_dataset2.txt";
     
     cout<<"Please enter number of iterations: ";
     //cin>>iterations;
@@ -46,11 +46,12 @@ int main(int argc, char** argv)
     
     run_aco session1;
     session1.set_dataset(dataset);
-    //session1.set_logfile("output.log");
-    session1.set_ants(10);
-    session1.set_iterations(100);
-    session1.set_threshold(50);
-    session1.generate_final_solution();
+    session1.set_logfile("output.log");
+    session1.set_ants(1);
+    session1.set_iterations(10);
+    session1.set_threshold(2.5);
+    session1.generate_final_solution(1);
   
+    cout<<"\nProgram Terminated!\n";
     return 0;
 }

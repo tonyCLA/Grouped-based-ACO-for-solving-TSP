@@ -17,7 +17,7 @@
 class ant
 {
     node position;
-    int id, sol_nr; // the id of the node as well as coordinates
+    int id, sol_nr; 
     float road_length; // total distance of the solution  
     
 public:
