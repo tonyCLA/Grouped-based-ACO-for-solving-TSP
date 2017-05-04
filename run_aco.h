@@ -37,9 +37,11 @@ class run_aco
     iterations, 
     nr_ants,
     nr_clusters,
-    verbosity;
-    float threshold, initial_pher;
-    int priority_distance, priority_pheromone;
+    verbosity,
+    distance_priority,
+    pheromone_priority;
+    float threshold, initial_pher, evaporation;
+    
     
     std::string dataset, logfile;
     
@@ -54,6 +56,11 @@ class run_aco
 public:
     void set_nr_ants(int nr);
     void set_nr_iterations(int nr);
+    void set_verbosity(int nr);
+    void set_IO_files(std::string data_file, std::string log_file);
+    void set_priority_params(int p1, int p2);
+    void set_threshold(float nr);
+    void set_pher_params(float initial_pherv, float evaporation_val);
     void set_nodes();
     void initialize_data();
     void display_nodes();
@@ -77,10 +84,7 @@ public:
     std::vector<int> two_opt_local(std::vector<int> sample, int sample_size);
     void refine_solution();
     float calculate_length(std::vector<int> tour, int tour_size);
-    std::vector<int> generate_final_solution(int mode, int verb, float threshold_val, 
-                                             float evaporation, float pher_val, 
-                                             std::string data_file, 
-                                             std::string log_file);
+    std::vector<int> generate_final_solution(int mode);
 };
 
 void run_aco::set_nr_ants(int nr)
@@ -91,6 +95,34 @@ void run_aco::set_nr_ants(int nr)
 void run_aco::set_nr_iterations(int nr)
 {
     iterations=nr;
+}
+
+void run_aco::set_verbosity(int nr)
+{
+    verbosity=nr;
+}
+
+void run_aco::set_IO_files(std::string data_file, std::string log_file)
+{
+    dataset=data_file;
+    logfile=log_file;
+}
+
+void run_aco::set_priority_params(int p1, int p2)
+{
+    pheromone_priority=p1;
+    distance_priority=p2; 
+}
+
+void run_aco::set_threshold(float nr)
+{
+    threshold=nr;
+}
+
+void run_aco::set_pher_params(float initial_pherv, float evaporation_val)
+{
+    initial_pher=initial_pherv;
+    evaporation=evaporation_val;
 }
 
 void run_aco::set_nodes()
@@ -373,14 +405,14 @@ void run_aco::set_probabilities( std::vector<float> &prob, std::vector<int> av_n
     {
         c1=nodes[av_nodes[j*2]].get_c();
         c2=nodes[av_nodes[j*2-1]].get_c();
-        sum+=pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 2  )  *  pow(pheromone_table[c1][c2],2);
+        sum+=pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), distance_priority  )  *  pow(pheromone_table[c1][c2], pheromone_priority );
     }
     
     for(j=1;j<=nr_av_nodes/2;j++)
     {
         c1=nodes[av_nodes[j*2]].get_c();
         c2=nodes[av_nodes[j*2-1]].get_c();
-        prob[j]=(pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), 2  )  *  pow(pheromone_table[c1][c2],2))/sum;
+        prob[j]=(pow( 1/nodes[av_nodes[j*2]].calc_dist(nodes[av_nodes[j*2-1]]), distance_priority  )  *  pow(pheromone_table[c1][c2], pheromone_priority ))/sum;
 
     }
 }
@@ -657,27 +689,17 @@ float run_aco::calculate_length(std::vector<int> tour, int tour_size)
     return total;
 }
 
-std::vector<int> run_aco::generate_final_solution(int mode, int verb, float threshold_val, 
-                                                  float evaporation, float pher_val, 
-                                                  std::string data_file, std::string log_file)
+std::vector<int> run_aco::generate_final_solution(int mode)
 {
-    srand (time(NULL));
-    verbosity=verb;
-    dataset=data_file;
-    logfile=log_file;
-    FileOutput log(logfile.c_str());
-    cout<<"\n\n    Starting Session\n";
     //the following line will ensure that the program will use different seed each time it runs
     // so that the random number generated using rand() function will be different on each run
-    initial_pher=pher_val;
-    threshold=threshold_val;
-    
+    srand (time(NULL));
+    FileOutput log(logfile.c_str());
+    cout<<"\n\n    Starting Session\n";
     cout<<"\n>> Reading the dataset:\n";
     set_nodes();
-    
     cout<<">> Set variables boundaries:\n";
     initialize_data();
-    
     display_nodes();
 
     if(mode==1)
@@ -685,12 +707,11 @@ std::vector<int> run_aco::generate_final_solution(int mode, int verb, float thre
         cout<<"\n>> Clustering nodes.\n";
         cluster_nodes_method1();
     }
+    
     set_clusters();
     display_clusters();
-    
     cout<<"\n>> Set pheromone levels.\n";
     set_pheromone(0.5);
-    
     start_aco(evaporation); 
     
     final_solution.resize(nr_nodes+1);
