@@ -22,16 +22,22 @@
 #include "cluster.h"
 #include "ant.h"
 #include "run_aco.h"
+#include "output.h"
 
 using namespace std;
 
 int main(int argc, char** argv) 
 {
-    int nr_ants=1, iterations=2, mode=1, pher_influence=2, heuristics_influence=2;
+    int nr_ants=1, 
+            iterations=2, 
+            mode=1, 
+            pher_influence=2, 
+            heuristics_influence=2, 
+            verbosity=1;
     
     float threshold=2.5, evaporation=0.1, initial_pher=0.5;
     string dataset="small_dataset1.txt";
-    string logfile="log.txt";
+    string logfile="output2.log";
     string change_param="no";
     
     cout<<"This program can run in two modes:\n";
@@ -46,43 +52,62 @@ int main(int argc, char** argv)
     cin.ignore();
     getline (cin,dataset); 
     
+    cout<<"Please enter the name of the logfile (.log file): ";
+    getline (cin,logfile);
+    
+    cout<<"\nThe output can have different levels of verbosity (1-3)";
+    cout<<"\nLevel 1 will only display main processes(Default)";
+    cout<<"\nLevel 2 will additionally display solutions of each ant at the end of an iteration";
+    cout<<"\nLevel 3 will additionally display each step of constructing ant solution";
+    cout<<"\nEnter the level of verbosity(1,2,3): ";
+    cin>>verbosity;
+    cin.ignore();
+    
+    //creating the logfile
+    std::ofstream output(logfile.c_str(), std::ios_base::out);
+    output.close();
+    FileOutput log(logfile.c_str());  
+    
     cout<<"\nDefault parameters are as follows:\n";
     cout<<"> Number of ants - 10\n> Number of iterations - 50\n";
     cout<<"> Initial pheromone level - 0.5\n> Pheromone evaporation - 0.1\n";
     cout<<"> Pheromone influence - 2\n> Heuristics influence - 2\n";
     
     cout<<" Do you want to change these parameters (yes/no)?";
-    cin.ignore();
     getline (cin,change_param);
     
     if(change_param.compare("yes") == 0)
     {
-        cin.ignore();
-        cout<<"\nEnter the number of ants: ";
+        cout<<"Enter the number of ants: ";
         cin>>nr_ants;
-        cout<<"\nEnter number of iterations: ";
+        cout<<"Enter number of iterations: ";
         cin>>iterations;
-        cout<<"\nEnter the initial pheromone level value: ";
+        cout<<"Enter the initial pheromone level value: ";
         cin>>initial_pher;
-        cout<<"\nEnter the pheromone evaporation: ";
+        cout<<"Enter the pheromone evaporation: ";
         cin>>evaporation;
-        cout<<"\nEnter pheromone influence:";
+        cout<<"Enter pheromone influence: ";
         cin>>pher_influence;
-        cout<<"\nEnter heuristics influence:";
+        cout<<"Enter heuristics influence: ";
         cin>>heuristics_influence;
-       
-        
-        cout<<"\nACO will run with the following parameters: \n";
-        cout<<"> Iterations: "<< iterations<<endl;
-        cout<<"> Nr. ants: "<< nr_ants<<endl;
-        cout<<"> Dataset file: "<< dataset<<endl;
     }
     
+    log<<"\n> Input file: "<< dataset;
+    log<<"\n> Output file: "<< logfile;
+    log<<"\n This session will run with the following parameters:";
+    log<<"\n> Iterations: "<< iterations;
+    log<<"\n> Nr. ants: "<< nr_ants;
+    log<<"\n> Pheromone initial value: "<< initial_pher;
+    log<<"\n> Pheromone evaporation value: "<< evaporation;
+    log<<"\n> Pheromone influence: "<< pher_influence;
+    log<<"\n> Heuristics influence: "<< heuristics_influence;
+    
+    log.close();
+    
     run_aco session1;
-    session1.set_ants(nr_ants);
-    session1.set_iterations(iterations);
-    session1.generate_final_solution(mode, threshold, evaporation, initial_pher, dataset, logfile);
-  
-    cout<<"\nProgram Terminated!\n";
+    session1.set_nr_ants(nr_ants);
+    session1.set_nr_iterations(iterations);
+    session1.generate_final_solution(mode,verbosity, threshold, evaporation, initial_pher, dataset, logfile);
+    
     return 0;
 }

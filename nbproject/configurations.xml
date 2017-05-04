@@ -7,6 +7,7 @@
       <itemPath>ant.h</itemPath>
       <itemPath>cluster.h</itemPath>
       <itemPath>node.h</itemPath>
+      <itemPath>output.h</itemPath>
       <itemPath>run_aco.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -35,7 +36,6 @@
     <itemPath>dataset2.txt</itemPath>
     <itemPath>dataset3.txt</itemPath>
     <itemPath>newfile</itemPath>
-    <itemPath>output.log</itemPath>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -63,7 +63,7 @@
       </item>
       <item path="node.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="output.log" ex="false" tool="3" flavor2="0">
+      <item path="output.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="run_aco.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -108,7 +108,7 @@
       </item>
       <item path="node.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="output.log" ex="false" tool="3" flavor2="0">
+      <item path="output.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="run_aco.h" ex="false" tool="3" flavor2="0">
       </item>
