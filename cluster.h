@@ -14,6 +14,9 @@
 #ifndef CLUSTER_H
 #define CLUSTER_H
 
+#include "node.h"
+
+
 class cluster
 {
     int nr_nodes, id;
@@ -27,7 +30,7 @@ public:
     void set_nr_nodes(int nr);
     int get_nr_nodes();
     void calculate_centroid();
-    void get_centroid();
+    node get_centroid();
 };
 
 
@@ -49,6 +52,24 @@ void cluster::set_nr_nodes(int nr)
 int cluster::get_nr_nodes()
 {
     return nr_nodes;
+}
+
+node cluster::get_centroid()
+{
+    return centroid;
+}
+
+void cluster::calculate_centroid()
+{
+    float sum_x=0, sum_y=0;
+    for(int i=1;i<=nr_nodes;i++)
+    {
+        sum_x+=node_list[i].get_x();
+        sum_y+=node_list[i].get_y();
+    }
+    
+    centroid.set_coord(sum_x/nr_nodes, sum_y/nr_nodes);
+    centroid.setid(-1*id); 
 }
 
 #endif /* CLUSTER_H */

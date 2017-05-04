@@ -36,7 +36,7 @@ class run_aco
     iterations, 
     nr_ants,
     nr_clusters;
-    float threshold;
+    float threshold, initial_pher;
     int priority_distance, priority_pheromone;
     
     std::string dataset, logfile;
@@ -52,9 +52,6 @@ class run_aco
 public:
     void set_ants(int nr);
     void set_iterations(int nr);
-    void set_threshold(float nr);
-    void set_dataset(std::string filename);
-    void set_logfile(std::string filename);
     void set_nodes();
     void initialize_data();
     void display_nodes();
@@ -78,7 +75,10 @@ public:
     std::vector<int> two_opt_local(std::vector<int> sample, int sample_size);
     void refine_solution();
     float calculate_length(std::vector<int> tour, int tour_size);
-    std::vector<int> generate_final_solution(int mode);
+    std::vector<int> generate_final_solution(int mode, float threshold_val, 
+                                             float evaporation, float pher_val, 
+                                             std::string data_file, 
+                                             std::string log_file);
 };
 
 void run_aco::set_ants(int nr)
@@ -89,21 +89,6 @@ void run_aco::set_ants(int nr)
 void run_aco::set_iterations(int nr)
 {
     iterations=nr;
-}
-
-void run_aco::set_threshold(float nr)
-{
-    threshold=nr;
-}
-
-void run_aco::set_dataset(std::string filename)
-{
-    dataset=filename;
-}
-
-void run_aco::set_logfile(std::string filename)
-{
-    logfile=filename;
 }
 
 void run_aco::set_nodes()
@@ -228,17 +213,20 @@ void run_aco::set_clusters()
         clusters[i].set_id(i); 
         for(j=1;j<=clusters[i].get_nr_nodes();j++) 
             nodes[clusters[i].node_list[j].get_id()].set_cluster(i); 
+        clusters[i].calculate_centroid();
     }
-        
+        clusters[1].calculate_centroid();
 }
 
 void run_aco::display_clusters()
 {
+    cout<<"The centroid of any cluster is not a dataset point!";
     cout<<"\n>> Display clusters:\n";
     cout<<"There are "<< nr_clusters<<" clusters:\n";
     for(int i=1; i<=nr_clusters; i++ , cout<<endl)
     {
         cout<<"cluster "<<i<<" has the following nodes ("<<clusters[i].get_nr_nodes()<<")\n";
+        cout<<"cluster centroid: "<< clusters[i].get_centroid().get_x()<<","<<clusters[i].get_centroid().get_y()<<endl;
         for(int j=1;j<=clusters[i].get_nr_nodes();j++)
             cout<<clusters[i].node_list[j].get_id()<<",";
     }
@@ -273,7 +261,7 @@ void run_aco::display_pheromone()
 
 void run_aco::locate_ants()
 {
-    //srand (time(NULL));
+    //
     cout<<">>> Positioning ants\n";
     for (int i=1; i<=nr_ants; i++)
     {   
@@ -660,9 +648,18 @@ float run_aco::calculate_length(std::vector<int> tour, int tour_size)
     return total;
 }
 
-std::vector<int> run_aco::generate_final_solution(int mode)
+std::vector<int> run_aco::generate_final_solution(int mode, float threshold_val, 
+                                                  float evaporation, float pher_val, 
+                                                  std::string data_file, std::string log_file)
 {
     cout<<"\n    Starting Program\n";
+    //the following line will ensure that the program will use different seed each time it runs
+    // so that the random number generated using rand() function will be different on each run
+    srand (time(NULL));
+    initial_pher=pher_val;
+    threshold=threshold_val;
+    dataset=data_file;
+    logfile=log_file;
     set_nodes();
     initialize_data();
     display_nodes();
@@ -671,7 +668,7 @@ std::vector<int> run_aco::generate_final_solution(int mode)
     set_clusters();
     display_clusters();
     set_pheromone(0.5);
-    start_aco(0.1); 
+    start_aco(evaporation); 
     //cout<<"\n\n Partial solution, made of clusters, found with given parameters is ("<<psol_length<<"):";
     //for(int i=1;i<nr_clusters+1;i++)
     //   cout<<nodes[partial_solution[i]].get_c()<<"->";
