@@ -28,7 +28,7 @@ using namespace std;
 int main(int argc, char** argv) 
 {
     int nr_ants, iterations;
-    string dataset="small_dataset2.txt";
+    string dataset="small_dataset1.txt";
     
     cout<<"Please enter number of iterations: ";
     //cin>>iterations;
