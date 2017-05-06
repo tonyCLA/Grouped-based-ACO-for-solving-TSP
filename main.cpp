@@ -28,16 +28,16 @@ using namespace std;
 
 int main(int argc, char** argv) 
 {
-    int nr_ants=1, 
-            iterations=2, 
+    int nr_ants=10, 
+            iterations=50, 
             mode=1, 
             pher_influence=2, 
             heuristics_influence=2, 
-            verbosity=1;
+            verbosity=2;
     
-    float threshold=250, evaporation=0.1, initial_pher=0.5;
+    float threshold=6, evaporation=0.1, initial_pher=0.5;
     string dataset="small_dataset1.txt",
-            logfile="output2.log", 
+            logfile="output.log", 
             change_param="no",
             loop="yes";
     
@@ -53,18 +53,18 @@ int main(int argc, char** argv)
 
         cout<<"Please enter the dataset location and filename (.txt file): ";
         cin.ignore();
-        getline (cin,dataset); 
+        //getline (cin,dataset); 
 
-        cout<<"Please enter the name of the logfile (.log file): ";
-        getline (cin,logfile);
+        //cout<<"Please enter the name of the logfile (.log file): ";
+        //getline (cin,logfile);
 
         cout<<"\nThe output can have different levels of verbosity (1-3)";
         cout<<"\nLevel 1 will only display main processes(Default)";
         cout<<"\nLevel 2 will additionally display solutions of each ant at the end of an iteration";
         cout<<"\nLevel 3 will additionally display each step of constructing ant solution";
         cout<<"\nEnter the level of verbosity(1,2,3): ";
-        cin>>verbosity;
-        cin.ignore();
+        //cin>>verbosity;
+        //cin.ignore();
 
         //creating the logfile
         std::ofstream output(logfile.c_str(), std::ios_base::out);
@@ -93,6 +93,7 @@ int main(int argc, char** argv)
             cin>>pher_influence;
             cout<<"Enter heuristics influence: ";
             cin>>heuristics_influence;
+            cin.ignore();
         }
 
         log<<"\n> Input file: "<< dataset;
@@ -110,15 +111,16 @@ int main(int argc, char** argv)
         run_aco session1;
         session1.set_nr_ants(nr_ants);
         session1.set_nr_iterations(iterations);
-        session1.set_verbosity(verbosity);
         session1.set_threshold(threshold);
+        session1.set_verbosity(verbosity);
         session1.set_pher_params(initial_pher, evaporation);
         session1.set_IO_files(dataset,logfile);
         session1.set_priority_params(pher_influence, heuristics_influence);
         session1.generate_final_solution(mode);
 
-        cout<<"Do you want to begin another session ?(yes/no) ";
-        cin.ignore();
+        cout<<"\n\n";
+        
+        cout<<"Do you want to begin another session ?(yes/no) ";  
         getline (cin,loop);
     }
     

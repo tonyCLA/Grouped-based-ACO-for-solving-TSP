@@ -57,15 +57,16 @@ public:
     void set_nr_ants(int nr);
     void set_nr_iterations(int nr);
     void set_verbosity(int nr);
+    void set_threshold(float nr);
     void set_IO_files(std::string data_file, std::string log_file);
     void set_priority_params(int p1, int p2);
-    void set_threshold(float nr);
     void set_pher_params(float initial_pherv, float evaporation_val);
     void set_nodes();
     void initialize_data();
     void display_nodes();
     void cluster_nodes_method1();
-    void set_clusters();
+    void cluster_nodes_method2();
+    void organize_clusters();
     void display_clusters();
     void set_pheromone(float initial_pher_levels);
     void display_pheromone();
@@ -102,6 +103,11 @@ void run_aco::set_verbosity(int nr)
     verbosity=nr;
 }
 
+void run_aco::set_threshold(float nr)
+{
+    threshold=nr;
+}
+
 void run_aco::set_IO_files(std::string data_file, std::string log_file)
 {
     dataset=data_file;
@@ -112,11 +118,6 @@ void run_aco::set_priority_params(int p1, int p2)
 {
     pheromone_priority=p1;
     distance_priority=p2; 
-}
-
-void run_aco::set_threshold(float nr)
-{
-    threshold=nr;
 }
 
 void run_aco::set_pher_params(float initial_pherv, float evaporation_val)
@@ -169,48 +170,112 @@ void run_aco::display_nodes()
     }
 }
 
+
+int count_clusters(std::vector<node> nodelist, int nr_of_nodes)
+{
+    int count=0;
+    bool check=false;
+    for(int i=1;i<=nr_of_nodes;i++)
+    {
+        check=false;
+        for(int j=i-1;j>=1;j--)
+        {
+            if(nodelist[i].get_c()==nodelist[j].get_c())
+                check=true;
+        }
+        if(!check)
+            count++;
+    }       
+    
+    return count;
+}
+
 /*
  * Method 1 
- *  Clustering comparing euclidean distance between 2 nodes
- *  If the distance is below a certain threshold the node 
- * of position j become part of same cluster as i
- * This method works well for small graph where the user has 
- * a rough idea of the distance between nodes
+ *  Clustering hierarchically using a threshold
+ *         initially each node is a cluster
+ *         combining two closest clusters (euclidean distance) at each iterations
+ *         until the distance between any two clusters is above the threshold
  */
 
 void run_aco::cluster_nodes_method1()
 {
-    float dist=std::numeric_limits<float>::max(),
-            min_dist=std::numeric_limits<float>::max();
+    float dist, min_dist;
     int c1, c2;
     bool step=false;
     nr_clusters=0;
     while(!step)
     {
         step=true;
+        min_dist=std::numeric_limits<float>::max();
         for(int i=1;i<=nr_nodes && step;i++)
         {
             c1=nodes[i].get_c();
             for(int j=1;j<=nr_nodes;j++)
             {
                 dist=nodes[i].calc_dist(nodes[j]);
-                if(i!=j && nodes[i].get_c()!=nodes[j].get_c() && dist < threshold && dist<min_dist)
+                if(i!=j && nodes[i].get_c()!=nodes[j].get_c() && dist<min_dist && dist<threshold)
                 {
                     c2=nodes[j].get_c();
-                    dist=min_dist;
+                    min_dist=dist;
                     step=false;
                 }
             }
+
+        }
+
+        for(int j=1;j<=nr_nodes;j++)
+            if(nodes[j].get_c() == c2)
+            {
+                nodes[j].set_cluster(c1);
+            }
+    }
+}
+
+/*
+ * Method 2
+ * Clustering hierarchically assuming the dataset has n clusters
+ *  group closest clusters at each iteration
+ *  until the number of clusters is higher than the expected number of clusters
+ */
+
+void run_aco::cluster_nodes_method2()
+{
+    float dist, min_dist;
+    int c1, c2;
+    bool step=false;
+    while(!step)
+    {
+        step=true;
+        min_dist=std::numeric_limits<float>::max();
+        for(int i=1;i<=nr_nodes;i++)
+        {
             for(int j=1;j<=nr_nodes;j++)
-                if(nodes[j].get_c() == c2)
+            {
+                dist=nodes[i].calc_dist(nodes[j]);
+                if(i!=j && nodes[i].get_c()!=nodes[j].get_c() &&  dist<min_dist)
                 {
-                    nodes[j].set_cluster(c1);
+                    cout<<"dist:"<< dist<<"nodes: "<<nodes[i].get_id()<<"->"<<nodes[j].get_id()<<endl;
+                    c1=nodes[i].get_c();
+                    c2=nodes[j].get_c();
+                    min_dist=dist;
+                    step=false;
                 }
+            }
+        }
+       if(count_clusters(nodes,nr_nodes)>threshold)
+       {
+        for(int j=1;j<=nr_nodes;j++)
+            if(nodes[j].get_c() == c2 || nodes[j].get_c() == c1)
+            {
+                nodes[j].set_cluster((c1+c2)*(-1));
+            }
+         cout<<"Join cluster "<<c1<<" with "<< c2<<" - "<<count_clusters(nodes,nr_nodes)<<endl;
         }
     }
 }
 
-void run_aco::set_clusters()
+void run_aco::organize_clusters()
 {
     int i,j, valid=true;
     nr_clusters=0;
@@ -240,7 +305,7 @@ void run_aco::set_clusters()
 
     }
     
-    for(i=2;i<=nr_clusters;i++)
+    for(i=1;i<=nr_clusters;i++)
     {
         clusters[i].set_id(i); 
         for(j=1;j<=clusters[i].get_nr_nodes();j++) 
@@ -705,13 +770,16 @@ std::vector<int> run_aco::generate_final_solution(int mode)
     if(mode==1)
     {
         cout<<"\n>> Clustering nodes.\n";
-        cluster_nodes_method1();
+        cluster_nodes_method2();
     }
     
-    set_clusters();
+    organize_clusters();
     display_clusters();
     cout<<"\n>> Set pheromone levels.\n";
     set_pheromone(0.5);
+    
+    cout<<"<<<<<<"<<count_clusters(nodes,nr_nodes);
+    
     start_aco(evaporation); 
     
     final_solution.resize(nr_nodes+1);
