@@ -8,7 +8,7 @@
  * File:   main.cpp
  * Author: tonyc
  *
- * Created on 27 februarie 2017, 14:25
+ * Created on 27 feb 2017, 14:25
  */
 #include <vector>
 #include <cstdlib>
@@ -28,14 +28,16 @@ using namespace std;
 
 int main(int argc, char** argv) 
 {
-    int nr_ants=10, 
-            iterations=50, 
+    int nr_ants=3, 
+            iterations=5, 
             mode=1, 
             pher_influence=2, 
             heuristics_influence=2, 
-            verbosity=2;
+            verbosity=1,
+            clustering_type=0,
+            aco_type=0;
     
-    float threshold=6, evaporation=0.1, initial_pher=0.5;
+    float threshold=5, evaporation=0.1, initial_pher=0.5;
     string dataset="small_dataset1.txt",
             logfile="output.log", 
             change_param="no",
@@ -47,24 +49,45 @@ int main(int argc, char** argv)
         cout<<"1. This mode will run the program as a typical Ant System algorithm\n";
         cout<<"2. This mode will group the nodes that are close to each other and run Ant System algorithm on groups of nodes\n";
 
-        cout<<"Please enter mode(1 or 2): ";
+        cout<<"Enter mode(1 or 2): ";
         cin>>mode;
-        if(mode!=1 && mode!=2)return 0;
-
-        cout<<"Please enter the dataset location and filename (.txt file): ";
+        
+        cout<<"\nThere are also 3 variations of Ant System algorithm:\n";
+        cout<<"1. Ant System\n";
+        cout<<"2. Min-Max Ant System\n";
+        cout<<"     When using this approach the initial pheromone value should be higher\n";
+        cout<<"as Min-Max AS will allow pheromone levels between an interval (p_min, p_max)";
+        cout<<"due to current limitations for this type of algorithm initial pheromone value represent p_max\n";
+        cout<<"and p_min is a few units smaller( number randomly chosen)\n";
+        cout<<"3. Rank-based Ant System\n";
+        cout<<"Select the type of Ant System:";
+        cin>>aco_type;
+        
+        
+        if(mode == 2)
+        {
+            cout<<"There are 2 types of clustering available\n";
+            cout<<"1.A hierarchical implementation (distance threshold needed)\n";
+            cout<<"2.A k-means implementation (number of clusters needed)\n";
+            cout<<"Select one option:";
+            cin>>clustering_type;
+        }
+        
+        cout<<"Enter the dataset location and filename (text file): ";
         cin.ignore();
-        //getline (cin,dataset); 
+        getline (cin,dataset); 
 
-        //cout<<"Please enter the name of the logfile (.log file): ";
-        //getline (cin,logfile);
+        cout<<"If the dataset is large and the verbosity is high the output is too big to fit in console display!\n";
+        cout<<"Enter the name of the logfile (.log file): ";
+        getline (cin,logfile);
 
         cout<<"\nThe output can have different levels of verbosity (1-3)";
         cout<<"\nLevel 1 will only display main processes(Default)";
         cout<<"\nLevel 2 will additionally display solutions of each ant at the end of an iteration";
         cout<<"\nLevel 3 will additionally display each step of constructing ant solution";
         cout<<"\nEnter the level of verbosity(1,2,3): ";
-        //cin>>verbosity;
-        //cin.ignore();
+        cin>>verbosity;
+        cin.ignore();
 
         //creating the logfile
         std::ofstream output(logfile.c_str(), std::ios_base::out);
@@ -99,6 +122,9 @@ int main(int argc, char** argv)
         log<<"\n> Input file: "<< dataset;
         log<<"\n> Output file: "<< logfile;
         log<<"\n This session will run with the following parameters:";
+        log<<"\n Mode: "<< mode;
+        log<<"\n ACO: "<< aco_type;
+        log<<"\n Clustering: "<< clustering_type;
         log<<"\n> Iterations: "<< iterations;
         log<<"\n> Nr. ants: "<< nr_ants;
         log<<"\n> Pheromone initial value: "<< initial_pher;
@@ -116,12 +142,13 @@ int main(int argc, char** argv)
         session1.set_pher_params(initial_pher, evaporation);
         session1.set_IO_files(dataset,logfile);
         session1.set_priority_params(pher_influence, heuristics_influence);
-        session1.generate_final_solution(mode);
+        session1.generate_final_solution(mode, clustering_type, aco_type);
 
         cout<<"\n\n";
         
         cout<<"Do you want to begin another session ?(yes/no) ";  
         getline (cin,loop);
+        //loop="no";
     }
     
     return 0;

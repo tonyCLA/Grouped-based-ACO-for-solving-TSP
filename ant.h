@@ -18,7 +18,7 @@ class ant
 {
     node position;
     int id, sol_nr; 
-    float road_length; // total distance of the solution  
+    float tour_length; // total distance of the solution  
     
 public:
     std::vector<int> solution;  // ant solution after each iteration; represented as a list of nodes; each node represent its cluster
@@ -31,9 +31,9 @@ public:
     void set_sol_nr(int ant_sol_nr);
     int get_sol_nr();
     void update_sol_nr(int add);
-    void set_road_length(float length);
-    float get_road_length();
-    void update_road_length(float add);
+    void set_tour_length(float length);
+    float get_tour_length();
+    void update_tour_length(float add);
 };
 
 void ant::set_id(int ant_id)
@@ -71,19 +71,19 @@ void ant::update_sol_nr(int add)
     sol_nr+=add;
 }
 
-void ant::set_road_length(float length)
+void ant::set_tour_length(float length)
 {
-    road_length=length;
+    tour_length=length;
 }
 
-float ant::get_road_length()
+float ant::get_tour_length()
 {
-    return road_length;
+    return tour_length;
 }
 
-void ant::update_road_length(float add)
+void ant::update_tour_length(float add)
 {
-    road_length+=add;
+    tour_length+=add;
 }
 
 #endif /* ANT_H */
