@@ -148,7 +148,6 @@ int main(int argc, char** argv)
         
         cout<<"Do you want to begin another session ?(yes/no) ";  
         getline (cin,loop);
-        //loop="no";
     }
     
     return 0;
